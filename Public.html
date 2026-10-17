@@ -3,161 +3,161 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Teacher AI Dashboard</title>
+    <title>Grade 8 IPP Teacher Dashboard</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: system-ui, sans-serif; background: #f3f4f6; margin: 0; padding: 20px; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .hidden { display: none !important; }
-        input, textarea { width: 100%; padding: 10px; margin: 8px 0 16px 0; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; }
-        button { background: #2563eb; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        button:hover { background: #1d4ed8; }
-        .widget-card { background: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Auth View -->
-        <div id="auth-section">
-            <h2>Teacher Portal Login</h2>
-            <input type="text" id="username" placeholder="Username">
-            <input type="password" id="password" placeholder="Password">
-            <button onclick="login()">Login</button>
-            <button onclick="register()" style="background: #4b5563; margin-left: 10px;">Register</button>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+
+    <!-- Navbar -->
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center shadow-xs">
+        <div class="flex items-center space-x-3">
+            <div class="bg-indigo-600 text-white p-2 rounded-xl font-bold text-lg">💡</div>
+            <h1 class="text-xl font-bold bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+                Grade 8 IPP Dashboard
+            </h1>
         </div>
-
-        <!-- Dashboard View -->
-        <div id="dashboard-section" class="hidden">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <h2>Welcome, <span id="user-display"></span>!</h2>
-                <button onclick="logout()" style="background: #dc2626;">Logout</button>
-            </div>
-            <hr>
-            <h3>Create New AI Widget</h3>
-            <input type="text" id="widget-title" placeholder="Widget Title (e.g., Text Simplifier)">
-            <textarea id="widget-prompt" placeholder="System Prompt (e.g., Rewrite this text for a 5th grader:)"></textarea>
-            <button onclick="createWidget()">Add Widget</button>
-
-            <h3>Your AI Widgets</h3>
-            <div id="widgets-container"></div>
+        <div id="user-display" class="text-sm font-medium text-slate-600">
+            <!-- Dynamic login state goes here -->
         </div>
-    </div>
+    </header>
 
-    <script>
-        const API_URL = '';
+    <!-- Main Container -->
+    <main class="flex-1 max-w-5xl w-full mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
 
-        // Check localStorage on load
-        window.addEventListener('DOMContentLoaded', () => {
-            const token = localStorage.getItem('teacher_token');
-            if (token) verifyToken(token);
-        });
-
-        async function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            const data = await res.json();
-            if (res.ok) {
-                localStorage.setItem('teacher_token', data.token);
-                showDashboard(data.username);
-            } else {
-                alert(data.error);
-            }
-        }
-
-        async function register() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const res = await fetch('/api/auth/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
-            });
-            const data = await res.json();
-            if (res.ok) {
-                localStorage.setItem('teacher_token', data.token);
-                showDashboard(data.username);
-            } else {
-                alert(data.error);
-            }
-        }
-
-        async function verifyToken(token) {
-            const res = await fetch('/api/auth/verify', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const data = await res.json();
-            if (res.ok) {
-                showDashboard(data.user.username);
-            } else {
-                logout();
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('teacher_token');
-            document.getElementById('auth-section').classList.remove('hidden');
-            document.getElementById('dashboard-section').classList.add('hidden');
-        }
-
-        function showDashboard(username) {
-            document.getElementById('user-display').innerText = username;
-            document.getElementById('auth-section').classList.add('hidden');
-            document.getElementById('dashboard-section').classList.remove('hidden');
-            loadWidgets();
-        }
-
-        async function loadWidgets() {
-            const token = localStorage.getItem('teacher_token');
-            const res = await fetch('/api/widgets', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const widgets = await res.json();
-            const container = document.getElementById('widgets-container');
-            container.innerHTML = '';
-            widgets.forEach(w => {
-                container.innerHTML += `
-                    <div class="widget-card">
-                        <h4>${w.title}</h4>
-                        <textarea id="input-${w.id}" placeholder="Enter text to process..."></textarea>
-                        <button onclick="runAI(${w.id}, '${encodeURIComponent(w.system_prompt)}')">Run AI</button>
-                        <p><strong>Result:</strong> <span id="output-${w.id}">...</span></p>
+        <!-- Left Column: Auth / Quick Controls -->
+        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between space-y-6">
+            <div>
+                <h2 class="text-lg font-semibold text-slate-800 mb-4">Teacher Portal</h2>
+                
+                <!-- Login/Register Form -->
+                <div id="auth-section" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Username</label>
+                        <input type="text" id="username" placeholder="Enter username" 
+                            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm transition">
                     </div>
-                `;
-            });
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1">Password</label>
+                        <input type="password" id="password" placeholder="Enter password" 
+                            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm transition">
+                    </div>
+                    <div class="flex space-x-3 pt-2">
+                        <button onclick="handleLogin()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl text-sm transition shadow-sm active:scale-95">
+                            Login
+                        </button>
+                        <button onclick="handleRegister()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2.5 rounded-xl text-sm transition active:scale-95">
+                            Register
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-100 pt-4 text-xs text-slate-400 text-center">
+                Powered by Groq & Node.js
+            </div>
+        </div>
+
+        <!-- Right Column: Gemini-Style AI Assistant Workspace -->
+        <div class="md:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between">
+            <div>
+                <h2 class="text-lg font-semibold text-slate-800 mb-2">AI IPP Assistant</h2>
+                <p class="text-sm text-slate-500 mb-4">Ask the AI to help draft student goals, accommodations, or teacher remarks.</p>
+                
+                <!-- Chat Output Box -->
+                <div id="ai-response-box" class="bg-slate-50 border border-slate-200 rounded-xl p-4 h-64 overflow-y-auto text-sm text-slate-700 mb-4 whitespace-pre-wrap">
+                    <span class="text-slate-400 italic">AI responses will appear here...</span>
+                </div>
+            </div>
+
+            <!-- Prompt Input Area -->
+            <div class="flex space-x-2">
+                <input type="text" id="ai-prompt" placeholder="e.g., Write a reading goal for an 8th grader..." 
+                    class="flex-1 px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm transition"
+                    onkeypress="if(event.key === 'Enter') askAI()">
+                <button onclick="askAI()" class="bg-slate-900 hover:bg-slate-800 text-white px-5 py-3 rounded-xl font-medium text-sm transition shadow-sm active:scale-95 flex items-center justify-center">
+                    Generate
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- JavaScript Client Logic -->
+    <script>
+        async function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Welcome back, ' + data.username + '!');
+                    document.getElementById('user-display').innerText = `Signed in as: ${data.username}`;
+                } else {
+                    alert(data.error || 'Login failed');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Network error during login');
+            }
         }
 
-        async function createWidget() {
-            const token = localStorage.getItem('teacher_token');
-            const title = document.getElementById('widget-title').value;
-            const system_prompt = document.getElementById('widget-prompt').value;
-            
-            await fetch('/api/widgets', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-                body: JSON.stringify({ title, system_prompt })
-            });
-            document.getElementById('widget-title').value = '';
-            document.getElementById('widget-prompt').value = '';
-            loadWidgets();
+        async function handleRegister() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('Registration successful! You can now log in.');
+                } else {
+                    alert(data.error || 'Registration failed');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Network error during registration');
+            }
         }
 
-        async function runAI(id, encodedPrompt) {
-            const system_prompt = decodeURIComponent(encodedPrompt);
-            const user_input = document.getElementById(`input-${id}`).value;
-            const outputSpan = document.getElementById(`output-${id}`);
-            outputSpan.innerText = 'Thinking...';
+        async function askAI() {
+            const prompt = document.getElementById('ai-prompt').value;
+            const box = document.getElementById('ai-response-box');
 
-            const res = await fetch('/api/ai/run', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ system_prompt, user_input })
-            });
-            const data = await res.json();
-            outputSpan.innerText = data.output;
+            if (!prompt.trim()) return;
+
+            box.innerHTML = `<span class="text-indigo-600 animate-pulse">Thinking...</span>`;
+
+            try {
+                const res = await fetch('/api/ai', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    box.innerText = data.result;
+                } else {
+                    box.innerText = 'Error: ' + (data.error || 'Failed to generate');
+                }
+            } catch (err) {
+                console.error(err);
+                box.innerText = 'Error connecting to AI service.';
+            }
         }
     </script>
 </body>
