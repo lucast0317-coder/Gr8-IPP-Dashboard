@@ -1,131 +1,104 @@
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
-const crypto = require('crypto');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
+// Middleware
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(__dirname));
 
-// Initialize SQLite Database
+// Database Setup
 const db = new sqlite3.Database('./database.db', (err) => {
-    if (err) console.error('Database connection error:', err.message);
-    else console.log('Connected to SQLite database.');
+    if (err) {
+        console.error('Error connecting to SQLite database:', err.message);
+    } else {
+        console.log('Connected to SQLite database.');
+    }
 });
 
-// Create Tables
+// Create tables if they don't exist
 db.serialize(() => {
-    db.run(`CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        session_token TEXT
-    )`);
-
-    db.run(`CREATE TABLE IF NOT EXISTS widgets (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        title TEXT NOT NULL,
-        system_prompt TEXT NOT NULL,
-        FOREIGN KEY(user_id) REFERENCES users(id)
-    )`);
+    db.run(`
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE,
+            password TEXT
+        )
+    `);
 });
 
-// --- AUTHENTICATION ROUTES ---
+// Serve Public.html at root route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Public.html'));
+});
 
-// Register
-app.post('/api/auth/register', (req, res) => {
+// Registration Endpoint
+app.post('/api/register', (req, res) => {
     const { username, password } = req.body;
-    const token = crypto.randomBytes(32).toString('hex');
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password required' });
+    }
 
-    db.run(`INSERT INTO users (username, password, session_token) VALUES (?, ?, ?)`,
-        [username, password, token], function(err) {
-            if (err) return res.status(400).json({ error: 'Username already taken or invalid.' });
-            res.json({ token, username, userId: this.lastID });
+    db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username, password], function (err) {
+        if (err) {
+            return res.status(400).json({ error: 'Username already exists or database error' });
         }
-    );
+        res.json({ message: 'User registered successfully', userId: this.lastID });
+    });
 });
 
-// Login
-app.post('/api/auth/login', (req, res) => {
+// Login Endpoint
+app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
-    db.get(`SELECT * FROM users WHERE username = ? AND password = ?`, [username, password], (err, user) => {
-        if (err || !user) return res.status(401).json({ error: 'Invalid username or password.' });
-
-        const token = crypto.randomBytes(32).toString('hex');
-        db.run(`UPDATE users SET session_token = ? WHERE id = ?`, [token, user.id], () => {
-            res.json({ token, username: user.username, userId: user.id });
-        });
+    db.get('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, user) => {
+        if (err || !user) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+        res.json({ message: 'Login successful', username: user.username });
     });
 });
 
-// Verify Token (Auto-Login check)
-app.get('/api/auth/verify', (req, res) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).json({ error: 'No token provided.' });
+// Groq AI Integration Endpoint
+app.post('/api/ai', async (req, res) => {
+    const { prompt } = req.body;
 
-    const token = authHeader.split(' ')[1];
-    db.get(`SELECT id, username FROM users WHERE session_token = ?`, [token], (err, user) => {
-        if (err || !user) return res.status(401).json({ error: 'Invalid session token.' });
-        res.json({ user });
-    });
-});
+    if (!GROQ_API_KEY) {
+        return res.status(500).json({ error: 'GROQ_API_KEY is missing from environment variables' });
+    }
 
-// --- WIDGET & AI ROUTES ---
-
-// Get User Widgets
-app.get('/api/widgets', (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    db.get(`SELECT id FROM users WHERE session_token = ?`, [token], (err, user) => {
-        if (!user) return res.status(401).json({ error: 'Unauthorized' });
-
-        db.all(`SELECT * FROM widgets WHERE user_id = ?`, [user.id], (err, widgets) => {
-            res.json(widgets);
-        });
-    });
-});
-
-// Create New AI Widget
-app.post('/api/widgets', (req, res) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    const { title, system_prompt } = req.body;
-
-    db.get(`SELECT id FROM users WHERE session_token = ?`, [token], (err, user) => {
-        if (!user) return res.status(401).json({ error: 'Unauthorized' });
-
-        db.run(`INSERT INTO widgets (user_id, title, system_prompt) VALUES (?, ?, ?)`,
-            [user.id, title, system_prompt], function(err) {
-                if (err) return res.status(500).json({ error: 'Failed to create widget' });
-                res.json({ id: this.lastID, title, system_prompt });
-            }
-        );
-    });
-});
-
-// Run AI Prompt via Gemini API
-app.post('/api/ai/run', async (req, res) => {
-    const { system_prompt, user_input } = req.body;
-    
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Authorization': `Bearer ${GROQ_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
-                contents: [
-                    { role: 'user', parts: [{ text: `${system_prompt}\n\nInput: ${user_input}` }] }
+                model: 'llama-3.1-8b-instant',
+                messages: [
+                    { role: 'system', content: 'You are a helpful assistant for Grade 8 teachers.' },
+                    { role: 'user', content: prompt }
                 ]
             })
         });
 
         const data = await response.json();
-        const output = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response generated.';
-        res.json({ output });
+        if (data.choices && data.choices[0]) {
+            res.json({ result: data.choices[0].message.content });
+        } else {
+            res.status(500).json({ error: 'Failed to generate response from Groq AI' });
+        }
     } catch (error) {
-        res.status(500).json({ error: 'Failed to communicate with AI model.' });
+        console.error('Groq AI Error:', error);
+        res.status(500).json({ error: 'Internal server error while connecting to AI' });
     }
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Start Server
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
