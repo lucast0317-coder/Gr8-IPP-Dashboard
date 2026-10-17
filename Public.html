@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher AI Dashboard</title>
+    <style>
+        body { font-family: system-ui, sans-serif; background: #f3f4f6; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .hidden { display: none !important; }
+        input, textarea { width: 100%; padding: 10px; margin: 8px 0 16px 0; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; }
+        button { background: #2563eb; color: white; border: none; padding: 10px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #1d4ed8; }
+        .widget-card { background: #f9fafb; border: 1px solid #e5e7eb; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Auth View -->
+        <div id="auth-section">
+            <h2>Teacher Portal Login</h2>
+            <input type="text" id="username" placeholder="Username">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()">Login</button>
+            <button onclick="register()" style="background: #4b5563; margin-left: 10px;">Register</button>
+        </div>
+
+        <!-- Dashboard View -->
+        <div id="dashboard-section" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h2>Welcome, <span id="user-display"></span>!</h2>
+                <button onclick="logout()" style="background: #dc2626;">Logout</button>
+            </div>
+            <hr>
+            <h3>Create New AI Widget</h3>
+            <input type="text" id="widget-title" placeholder="Widget Title (e.g., Text Simplifier)">
+            <textarea id="widget-prompt" placeholder="System Prompt (e.g., Rewrite this text for a 5th grader:)"></textarea>
+            <button onclick="createWidget()">Add Widget</button>
+
+            <h3>Your AI Widgets</h3>
+            <div id="widgets-container"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '';
+
+        // Check localStorage on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('teacher_token');
+            if (token) verifyToken(token);
+        });
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                localStorage.setItem('teacher_token', data.token);
+                showDashboard(data.username);
+            } else {
+                alert(data.error);
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+            if (res.ok) {
+                localStorage.setItem('teacher_token', data.token);
+                showDashboard(data.username);
+            } else {
+                alert(data.error);
+            }
+        }
+
+        async function verifyToken(token) {
+            const res = await fetch('/api/auth/verify', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                showDashboard(data.user.username);
+            } else {
+                logout();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('teacher_token');
+            document.getElementById('auth-section').classList.remove('hidden');
+            document.getElementById('dashboard-section').classList.add('hidden');
+        }
+
+        function showDashboard(username) {
+            document.getElementById('user-display').innerText = username;
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
+            loadWidgets();
+        }
+
+        async function loadWidgets() {
+            const token = localStorage.getItem('teacher_token');
+            const res = await fetch('/api/widgets', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const widgets = await res.json();
+            const container = document.getElementById('widgets-container');
+            container.innerHTML = '';
+            widgets.forEach(w => {
+                container.innerHTML += `
+                    <div class="widget-card">
+                        <h4>${w.title}</h4>
+                        <textarea id="input-${w.id}" placeholder="Enter text to process..."></textarea>
+                        <button onclick="runAI(${w.id}, '${encodeURIComponent(w.system_prompt)}')">Run AI</button>
+                        <p><strong>Result:</strong> <span id="output-${w.id}">...</span></p>
+                    </div>
+                `;
+            });
+        }
+
+        async function createWidget() {
+            const token = localStorage.getItem('teacher_token');
+            const title = document.getElementById('widget-title').value;
+            const system_prompt = document.getElementById('widget-prompt').value;
+            
+            await fetch('/api/widgets', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ title, system_prompt })
+            });
+            document.getElementById('widget-title').value = '';
+            document.getElementById('widget-prompt').value = '';
+            loadWidgets();
+        }
+
+        async function runAI(id, encodedPrompt) {
+            const system_prompt = decodeURIComponent(encodedPrompt);
+            const user_input = document.getElementById(`input-${id}`).value;
+            const outputSpan = document.getElementById(`output-${id}`);
+            outputSpan.innerText = 'Thinking...';
+
+            const res = await fetch('/api/ai/run', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ system_prompt, user_input })
+            });
+            const data = await res.json();
+            outputSpan.innerText = data.output;
+        }
+    </script>
+</body>
+</html>
