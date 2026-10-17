@@ -36,8 +36,8 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'Public.html'));
 });
 
-// Registration Endpoint
-app.post('/api/register', (req, res) => {
+// Registration Endpoint (supports both /api/register and /api/auth/register)
+app.post(['/api/register', '/api/auth/register'], (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
         return res.status(400).json({ error: 'Username and password required' });
@@ -51,8 +51,8 @@ app.post('/api/register', (req, res) => {
     });
 });
 
-// Login Endpoint
-app.post('/api/login', (req, res) => {
+// Login Endpoint (supports both /api/login and /api/auth/login)
+app.post(['/api/login', '/api/auth/login'], (req, res) => {
     const { username, password } = req.body;
     db.get('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, user) => {
         if (err || !user) {
