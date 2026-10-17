@@ -36,7 +36,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'Public.html'));
 });
 
-// Registration Endpoint (supports both /api/register and /api/auth/register)
+// Registration Endpoint (supports multiple path variants)
 app.post(['/api/register', '/api/auth/register'], (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
@@ -51,7 +51,7 @@ app.post(['/api/register', '/api/auth/register'], (req, res) => {
     });
 });
 
-// Login Endpoint (supports both /api/login and /api/auth/login)
+// Login Endpoint (supports multiple path variants)
 app.post(['/api/login', '/api/auth/login'], (req, res) => {
     const { username, password } = req.body;
     db.get('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, user) => {
@@ -67,7 +67,7 @@ app.post('/api/ai', async (req, res) => {
     const { prompt } = req.body;
 
     if (!GROQ_API_KEY) {
-        return res.status(500).json({ error: 'GROQ_API_KEY is missing from environment variables' });
+        return res.status(500).json({ error: 'GROQ_API_KEY is missing from environment variables on Render.' });
     }
 
     try {
@@ -78,22 +78,24 @@ app.post('/api/ai', async (req, res) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: 'llama-3.1-8b-instant',
+                model: 'llama-3.3-70b-versatile',
                 messages: [
-                    { role: 'system', content: 'You are a helpful assistant for Grade 8 teachers.' },
+                    { role: 'system', content: 'You are a helpful assistant for Grade 8 teachers helping write Individual Program Plans (IPPs).' },
                     { role: 'user', content: prompt }
                 ]
             })
         });
 
         const data = await response.json();
+        
         if (data.choices && data.choices[0]) {
             res.json({ result: data.choices[0].message.content });
         } else {
-            res.status(500).json({ error: 'Failed to generate response from Groq AI' });
+            console.error('Groq API Error Response:', data);
+            res.status(500).json({ error: data.error?.message || 'Failed to generate response from Groq AI' });
         }
     } catch (error) {
-        console.error('Groq AI Error:', error);
+        console.error('Groq AI Network Error:', error);
         res.status(500).json({ error: 'Internal server error while connecting to AI' });
     }
 });
