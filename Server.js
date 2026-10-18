@@ -36,39 +36,50 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'Public.html'));
 });
 
-// Registration Endpoint (supports multiple path variants)
+// Registration Endpoint
 app.post(['/api/register', '/api/auth/register'], (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) {
-        return res.status(400).json({ error: 'Username and password required' });
+        return res.status(400).json({ error: 'Username and password are required.' });
     }
 
-    db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username, password], function (err) {
+    db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username.trim(), password], function (err) {
         if (err) {
-            return res.status(400).json({ error: 'Username already exists or database error' });
+            return res.status(400).json({ error: 'Username already exists or database error.' });
         }
         res.json({ message: 'User registered successfully', userId: this.lastID });
     });
 });
 
-// Login Endpoint (supports multiple path variants)
+// Login Endpoint
 app.post(['/api/login', '/api/auth/login'], (req, res) => {
     const { username, password } = req.body;
-    db.get('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, user) => {
-        if (err || !user) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password are required.' });
+    }
+
+    db.get('SELECT * FROM users WHERE username = ? AND password = ?', [username.trim(), password], (err, user) => {
+        if (err) {
+            return res.status(500).json({ error: 'Database error during login.' });
+        }
+        if (!user) {
+            return res.status(401).json({ error: 'Invalid username or password.' });
         }
         res.json({ message: 'Login successful', username: user.username });
     });
 });
 
-// Groq AI Integration Endpoint
+// Groq AI Integration Endpoint with structured grade/task support
 app.post('/api/ai', async (req, res) => {
-    const { prompt } = req.body;
+    const { prompt, grade, taskType } = req.body;
 
     if (!GROQ_API_KEY) {
         return res.status(500).json({ error: 'GROQ_API_KEY is missing from environment variables on Render.' });
     }
+
+    // Construct a professional prompt using prompt engineering based on dropdown selections
+    let systemRole = 'You are an expert educational assistant for teachers helping write Individual Program Plans (IPPs) and classroom accommodations.';
+    let refinedPrompt = `Target Grade Level: ${grade || 'Grade 8'}\nTask Type: ${taskType || 'General IPP Help'}\n\nUser Request: ${prompt}`;
 
     try {
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -80,9 +91,10 @@ app.post('/api/ai', async (req, res) => {
             body: JSON.stringify({
                 model: 'llama-3.3-70b-versatile',
                 messages: [
-                    { role: 'system', content: 'You are a helpful assistant for Grade 8 teachers helping write Individual Program Plans (IPPs).' },
-                    { role: 'user', content: prompt }
-                ]
+                    { role: 'system', content: systemRole },
+                    { role: 'user', content: refinedPrompt }
+                ],
+                temperature: 0.7
             })
         });
 
