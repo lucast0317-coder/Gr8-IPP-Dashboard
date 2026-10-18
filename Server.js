@@ -69,17 +69,19 @@ app.post(['/api/login', '/api/auth/login'], (req, res) => {
     });
 });
 
-// Groq AI Integration Endpoint with structured grade/task support
+// Groq AI Integration Endpoint supporting dynamic custom tasks
 app.post('/api/ai', async (req, res) => {
-    const { prompt, grade, taskType } = req.body;
+    const { prompt, grade, taskType, customTask } = req.body;
 
     if (!GROQ_API_KEY) {
         return res.status(500).json({ error: 'GROQ_API_KEY is missing from environment variables on Render.' });
     }
 
-    // Construct a professional prompt using prompt engineering based on dropdown selections
-    let systemRole = 'You are an expert educational assistant for teachers helping write Individual Program Plans (IPPs) and classroom accommodations.';
-    let refinedPrompt = `Target Grade Level: ${grade || 'Grade 8'}\nTask Type: ${taskType || 'General IPP Help'}\n\nUser Request: ${prompt}`;
+    // Determine the active task category (handles custom user-created tasks)
+    const activeTask = taskType === 'custom' ? (customTask || 'Custom Teacher Task') : taskType;
+
+    let systemRole = 'You are an expert educational assistant for teachers helping write Individual Program Plans (IPPs) and classroom resources.';
+    let refinedPrompt = `Target Grade Level: ${grade || 'Grade 8'}\nTask/Activity Type: ${activeTask}\n\nTeacher Prompt/Details: ${prompt}`;
 
     try {
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {

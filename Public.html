@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grade 8 IPP Teacher Dashboard</title>
+    <title>AI Teacher Dashboard - By Lucas Tang</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,16 +18,16 @@
     <!-- ========================================== -->
     <div id="auth-view" class="flex-1 flex items-center justify-center p-6">
         <div class="max-w-md w-full bg-slate-800 border border-slate-700/80 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-            <!-- Decorative background glow -->
+            <!-- Decorative background glow with red & green accents -->
             <div class="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-rose-600/15 rounded-full blur-3xl pointer-events-none"></div>
 
             <div class="text-center mb-8 relative z-10">
-                <div class="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-tr from-emerald-600 to-indigo-600 rounded-2xl shadow-lg mb-4 text-2xl">
-                    🎓
+                <div class="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-tr from-rose-600 to-emerald-500 rounded-2xl shadow-lg mb-4 text-2xl">
+                    🍎
                 </div>
-                <h1 class="text-2xl font-bold tracking-tight text-white">Teacher Portal</h1>
-                <p class="text-sm text-slate-400 mt-1">Sign in to access your IPP & AI assistant suite</p>
+                <h1 class="text-2xl font-bold tracking-tight text-white">AI Teacher Dashboard</h1>
+                <p class="text-xs text-rose-400 font-semibold mt-1">By: Lucas Tang</p>
             </div>
 
             <div class="space-y-5 relative z-10">
@@ -42,13 +42,13 @@
                         class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition placeholder:text-slate-600">
                 </div>
                 
-                <div id="auth-error" class="hidden text-xs text-rose-400 font-medium bg-rose-500/10 p-3 rounded-xl border border-rose-500/20 text-center"></div>
+                <div id="auth-error" class="hidden text-xs text-rose-400 font-medium bg-rose-500/10 p-3 rounded-xl border border-rose-500/30 text-center"></div>
 
                 <div class="flex space-x-3 pt-2">
                     <button onclick="handleLogin()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl text-sm transition shadow-lg shadow-emerald-600/20 active:scale-95">
                         Login
                     </button>
-                    <button onclick="handleRegister()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold py-3 rounded-xl text-sm transition active:scale-95">
+                    <button onclick="handleRegister()" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-semibold py-3 rounded-xl text-sm transition shadow-lg shadow-rose-600/20 active:scale-95">
                         Register
                     </button>
                 </div>
@@ -63,17 +63,17 @@
         <!-- Vibrant Header Bar -->
         <header class="bg-slate-800 border-b border-slate-700 px-8 py-4 flex justify-between items-center shadow-md">
             <div class="flex items-center space-x-3">
-                <div class="bg-gradient-to-tr from-emerald-500 to-indigo-500 text-white p-2.5 rounded-xl font-bold text-lg shadow-md">💡</div>
+                <div class="bg-gradient-to-tr from-emerald-500 to-rose-600 text-white p-2.5 rounded-xl font-bold text-lg shadow-md">💡</div>
                 <div>
-                    <h1 class="text-lg font-bold tracking-tight text-white">Grade 8 IPP Teacher Dashboard</h1>
-                    <p class="text-xs text-emerald-400 font-medium">Prompt Engineering & Student Goal Suite</p>
+                    <h1 class="text-base font-bold tracking-tight text-white">AI Teacher Dashboard</h1>
+                    <p class="text-xs text-rose-400 font-medium">By: Lucas Tang</p>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
                 <div id="user-display" class="text-sm font-medium text-slate-300 bg-slate-900 px-4 py-2 rounded-xl border border-slate-700">
                     <!-- Dynamic username -->
                 </div>
-                <button onclick="handleLogout()" class="bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 font-semibold text-xs px-4 py-2.5 rounded-xl border border-rose-500/30 transition shadow-sm active:scale-95">
+                <button onclick="handleLogout()" class="bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition shadow-md shadow-rose-600/20 active:scale-95">
                     Sign Out
                 </button>
             </div>
@@ -90,30 +90,36 @@
                             <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 mr-2 inline-block"></span>
                             AI Prompt Controls
                         </h2>
-                        <p class="text-xs text-slate-400">Customize parameters for your generated content.</p>
+                        <p class="text-xs text-slate-400">Configure parameters for your AI assistant.</p>
                     </div>
 
-                    <!-- Grade Level Dropdown -->
+                    <!-- Grade Level Dropdown (No High School) -->
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Select Grade Level</label>
                         <select id="grade-select" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
                             <option value="Grade 6">Grade 6</option>
                             <option value="Grade 7">Grade 7</option>
                             <option value="Grade 8" selected>Grade 8</option>
-                            <option value="Grade 9">Grade 9</option>
-                            <option value="High School General">High School General</option>
                         </select>
                     </div>
 
                     <!-- Task Type Dropdown -->
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Select Task Type</label>
-                        <select id="task-select" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+                        <select id="task-select" onchange="toggleCustomTaskInput()" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
                             <option value="Draft IPP Goal">Draft IPP Goal & Objectives</option>
                             <option value="Simplify Text">Simplify Text / Reading Level</option>
                             <option value="Create Word Problem">Create Customized Word Problem</option>
                             <option value="Accommodations Strategy">Classroom Accommodations Strategy</option>
+                            <option value="custom">✨ Add Your Own...</option>
                         </select>
+                    </div>
+
+                    <!-- Custom Task Input (Hidden by default) -->
+                    <div id="custom-task-container" class="hidden">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-rose-400 mb-2">Custom Task Name</label>
+                        <input type="text" id="custom-task-input" placeholder="e.g., Weekly Quiz Generator..." 
+                            class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-rose-500/50 text-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm transition">
                     </div>
 
                     <div class="p-3 bg-slate-900/60 rounded-2xl border border-slate-700 space-y-2">
@@ -129,7 +135,7 @@
                 </div>
 
                 <div class="border-t border-slate-700/60 pt-4 text-xs text-slate-500 text-center">
-                    Gr. 8 IPP Tool &bull; Powered by Groq AI
+                    AI Teacher Dashboard &bull; By Lucas Tang
                 </div>
             </div>
 
@@ -140,17 +146,17 @@
                         <h2 class="text-base font-bold text-white">✨ AI Assistant Workspace</h2>
                         <span class="text-xs bg-emerald-500/15 text-emerald-300 font-semibold px-2.5 py-1 rounded-lg border border-emerald-500/30">Prompt Engineering Active</span>
                     </div>
-                    <p class="text-xs text-slate-400 mb-4">Provide details below. The AI will apply your selected grade level and task type automatically.</p>
+                    <p class="text-xs text-slate-400 mb-4">Provide details below. The AI will apply your selected grade level and custom task type automatically.</p>
                     
                     <!-- Chat Output Box -->
                     <div id="ai-response-box" class="bg-slate-900 border border-slate-700 rounded-2xl p-5 h-72 overflow-y-auto text-sm text-slate-200 mb-4 whitespace-pre-wrap leading-relaxed">
-                        <span class="text-slate-500 italic">Generated goals, word problems, or simplified text will appear here...</span>
+                        <span class="text-slate-500 italic">Generated goals, word problems, or custom teacher content will appear here...</span>
                     </div>
                 </div>
 
                 <!-- Prompt Input Area -->
                 <div class="flex space-x-3">
-                    <input type="text" id="ai-prompt" placeholder="e.g., Student struggles with multi-step math word problems..." 
+                    <input type="text" id="ai-prompt" placeholder="e.g., Student struggles with multi-step word problems..." 
                         class="flex-1 px-4 py-3.5 rounded-2xl bg-slate-900 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition placeholder:text-slate-600"
                         onkeypress="if(event.key === 'Enter') askAI()">
                     <button onclick="askAI()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3.5 rounded-2xl font-semibold text-sm transition shadow-lg shadow-emerald-600/25 active:scale-95 flex items-center justify-center">
@@ -166,7 +172,6 @@
     <!-- JAVASCRIPT LOGIC & SESSION PERSISTENCE    -->
     <!-- ========================================== -->
     <script>
-        // Check if user was already logged in on page load
         window.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('ipp_logged_in_user');
             if (savedUser) {
@@ -178,6 +183,16 @@
             document.getElementById('auth-view').classList.add('hidden');
             document.getElementById('dashboard-view').classList.remove('hidden');
             document.getElementById('user-display').innerText = `Teacher: ${username}`;
+        }
+
+        function toggleCustomTaskInput() {
+            const taskSelect = document.getElementById('task-select').value;
+            const customContainer = document.getElementById('custom-task-container');
+            if (taskSelect === 'custom') {
+                customContainer.classList.remove('hidden');
+            } else {
+                customContainer.classList.add('hidden');
+            }
         }
 
         async function handleLogin() {
@@ -259,17 +274,19 @@
             const prompt = document.getElementById('ai-prompt').value;
             const grade = document.getElementById('grade-select').value;
             const taskType = document.getElementById('task-select').value;
+            const customTask = document.getElementById('custom-task-input').value;
             const box = document.getElementById('ai-response-box');
 
             if (!prompt.trim()) return;
 
-            box.innerHTML = `<span class="text-emerald-400 animate-pulse font-medium">Engineering prompt for ${grade} (${taskType})...</span>`;
+            const activeTaskDisplay = taskType === 'custom' ? (customTask || 'Custom Task') : taskType;
+            box.innerHTML = `<span class="text-emerald-400 animate-pulse font-medium">Engineering prompt for ${grade} (${activeTaskDisplay})...</span>`;
 
             try {
                 const res = await fetch('/api/ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt, grade, taskType })
+                    body: JSON.stringify({ prompt, grade, taskType, customTask })
                 });
                 const data = await res.json();
                 if (res.ok) {
