@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Teacher Dashboard - By Lucas Tang 8-42</title>
+    <title>AI Teacher Dashboard - By Lucas Tang</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -11,44 +11,48 @@
         body { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col selection:bg-emerald-500 selection:text-white">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col selection:bg-blue-500 selection:text-white">
 
     <!-- ========================================== -->
     <!-- VIEW 1: LOGIN / REGISTER SCREEN            -->
     <!-- ========================================== -->
     <div id="auth-view" class="flex-1 flex items-center justify-center p-6">
-        <div class="max-w-md w-full bg-slate-800 border border-slate-700/80 rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-            <!-- Decorative background glow -->
-            <div class="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -left-24 w-48 h-48 bg-rose-600/15 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="max-w-md w-full bg-white border border-slate-200 rounded-3xl p-8 shadow-xl relative overflow-hidden">
+            <!-- Google Colors Accent Bar -->
+            <div class="absolute top-0 left-0 right-0 h-1.5 flex">
+                <div class="flex-1 bg-blue-500"></div>
+                <div class="flex-1 bg-red-500"></div>
+                <div class="flex-1 bg-yellow-400"></div>
+                <div class="flex-1 bg-green-500"></div>
+            </div>
 
-            <div class="text-center mb-8 relative z-10">
-                <div class="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-tr from-rose-600 to-emerald-500 rounded-2xl shadow-lg mb-4 text-2xl">
+            <div class="text-center mb-8 relative z-10 pt-2">
+                <div class="inline-flex items-center justify-center w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl shadow-xs mb-4 text-2xl border border-blue-100">
                     🍎
                 </div>
-                <h1 class="text-2xl font-bold tracking-tight text-white">AI Teacher Dashboard</h1>
-                <p class="text-xs text-rose-400 font-semibold mt-1">By: Lucas Tang</p>
+                <h1 class="text-2xl font-bold tracking-tight text-slate-900">AI Teacher Dashboard</h1>
+                <p class="text-xs text-slate-500 font-semibold mt-1">By: Lucas Tang</p>
             </div>
 
             <div class="space-y-5 relative z-10">
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Username</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Username</label>
                     <input type="text" id="username" placeholder="Enter your username" 
-                        class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition placeholder:text-slate-600">
+                        class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition placeholder:text-slate-400">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Password</label>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Password</label>
                     <input type="password" id="password" placeholder="Enter your password" 
-                        class="w-full px-4 py-3 rounded-xl bg-slate-900/80 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition placeholder:text-slate-600">
+                        class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition placeholder:text-slate-400">
                 </div>
                 
-                <div id="auth-error" class="hidden text-xs text-rose-400 font-medium bg-rose-500/10 p-3 rounded-xl border border-rose-500/30 text-center"></div>
+                <div id="auth-error" class="hidden text-xs text-red-600 font-medium bg-red-50 p-3 rounded-xl border border-red-200 text-center"></div>
 
                 <div class="flex space-x-3 pt-2">
-                    <button onclick="handleLogin()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-xl text-sm transition shadow-lg shadow-emerald-600/20 active:scale-95">
+                    <button onclick="handleLogin()" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl text-sm transition shadow-sm active:scale-95">
                         Login
                     </button>
-                    <button onclick="handleRegister()" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-semibold py-3 rounded-xl text-sm transition shadow-lg shadow-rose-600/20 active:scale-95">
+                    <button onclick="handleRegister()" class="flex-1 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold py-3 rounded-xl text-sm transition active:scale-95">
                         Register
                     </button>
                 </div>
@@ -60,20 +64,26 @@
     <!-- VIEW 2: MAIN DASHBOARD SCREEN              -->
     <!-- ========================================== -->
     <div id="dashboard-view" class="hidden flex-1 flex flex-col">
-        <!-- Header Bar -->
-        <header class="bg-slate-800 border-b border-slate-700 px-8 py-4 flex justify-between items-center shadow-md">
+        <!-- Header Bar with Google Colored Logo Accent -->
+        <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center shadow-xs">
             <div class="flex items-center space-x-3">
-                <div class="bg-gradient-to-tr from-emerald-500 to-rose-600 text-white p-2.5 rounded-xl font-bold text-lg shadow-md">💡</div>
+                <!-- Google 4-color dot layout badge -->
+                <div class="flex space-x-1 p-2 bg-slate-100 rounded-xl border border-slate-200">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                    <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
+                    <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                </div>
                 <div>
-                    <h1 class="text-base font-bold tracking-tight text-white">AI Teacher Dashboard</h1>
-                    <p class="text-xs text-rose-400 font-medium">By: Lucas Tang</p>
+                    <h1 class="text-base font-bold tracking-tight text-slate-900">AI Teacher Dashboard</h1>
+                    <p class="text-xs text-slate-500 font-medium">By: Lucas Tang</p>
                 </div>
             </div>
             <div class="flex items-center space-x-4">
-                <div id="user-display" class="text-sm font-medium text-slate-300 bg-slate-900 px-4 py-2 rounded-xl border border-slate-700">
+                <div id="user-display" class="text-sm font-medium text-slate-600 bg-slate-100 px-4 py-2 rounded-xl border border-slate-200">
                     <!-- Dynamic username -->
                 </div>
-                <button onclick="handleLogout()" class="bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition shadow-md shadow-rose-600/20 active:scale-95">
+                <button onclick="handleLogout()" class="bg-red-50 hover:bg-red-100 text-red-600 font-semibold text-xs px-4 py-2.5 rounded-xl border border-red-200 transition active:scale-95">
                     Sign Out
                 </button>
             </div>
@@ -83,20 +93,20 @@
         <main class="flex-1 max-w-6xl w-full mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
 
             <!-- Left Controls Card -->
-            <div class="bg-slate-800 p-6 rounded-3xl border border-slate-700/80 shadow-xl flex flex-col justify-between space-y-6">
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-6">
                 <div class="space-y-5">
                     <div>
-                        <h2 class="text-base font-bold text-white mb-1 flex items-center">
-                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 mr-2 inline-block"></span>
-                            AI Prompt Controls
+                        <h2 class="text-base font-bold text-slate-900 mb-1 flex items-center">
+                            <span class="w-2.5 h-2.5 rounded-full bg-green-500 mr-2 inline-block"></span>
+                            AI Tool Suite
                         </h2>
-                        <p class="text-xs text-slate-400">Configure parameters for your AI assistant.</p>
+                        <p class="text-xs text-slate-500">MagicSchool & IPP Assistant presets.</p>
                     </div>
 
                     <!-- Grade Level Dropdown -->
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Select Grade Level</label>
-                        <select id="grade-select" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Select Grade Level</label>
+                        <select id="grade-select" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                             <option value="Grade 6">Grade 6</option>
                             <option value="Grade 7">Grade 7</option>
                             <option value="Grade 8" selected>Grade 8</option>
@@ -104,63 +114,74 @@
                         </select>
                     </div>
 
-                    <!-- Task Type Dropdown -->
+                    <!-- Expanded Task Type Dropdown (MagicSchool inspired) -->
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Select Task Type</label>
-                        <select id="task-select" onchange="toggleCustomTaskInput()" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
-                            <option value="Draft IPP Goal">Draft IPP Goal & Objectives</option>
-                            <option value="Simplify Text">Simplify Text / Reading Level</option>
-                            <option value="Create Word Problem">Create Customized Word Problem</option>
-                            <option value="Accommodations Strategy">Classroom Accommodations Strategy</option>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Select Tool / Task</label>
+                        <select id="task-select" onchange="toggleCustomTaskInput()" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+                            <optgroup label="IPP & Accommodation Tools">
+                                <option value="Draft IPP Goal">Draft IPP Goal & Objectives</option>
+                                <option value="Accommodations Strategy">Classroom Accommodations Strategy</option>
+                                <option value="Behavior Intervention Plan">Behavior Intervention Plan (BIP)</option>
+                            </optgroup>
+                            <optgroup label="Lesson & Content Design">
+                                <option value="Lesson Plan Generator">Lesson Plan Generator</option>
+                                <option value="Simplify Text">Simplify Text / Reading Level</option>
+                                <option value="Create Word Problem">Customized Math Word Problem</option>
+                            </optgroup>
+                            <optgroup label="Assessment & Communication">
+                                <option value="Quiz / Assessment Builder">Quiz / Assessment Builder</option>
+                                <option value="Rubric Creator">Rubric Creator</option>
+                                <option value="Email to Parent">Professional Email to Parent</option>
+                            </optgroup>
                             <option value="custom">✨ Add Your Own...</option>
                         </select>
                     </div>
 
                     <!-- Custom Task Input -->
                     <div id="custom-task-container" class="hidden">
-                        <label class="block text-xs font-bold uppercase tracking-wider text-rose-400 mb-2">Custom Task Name</label>
-                        <input type="text" id="custom-task-input" placeholder="e.g., Weekly Quiz Generator..." 
-                            class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-rose-500/50 text-slate-100 focus:outline-none focus:ring-2 focus:ring-rose-500 text-sm transition">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-blue-600 mb-2">Custom Tool Name</label>
+                        <input type="text" id="custom-task-input" placeholder="e.g., Science Lab Activity..." 
+                            class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-blue-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition">
                     </div>
 
-                    <div class="p-3 bg-slate-900/60 rounded-2xl border border-slate-700 space-y-2">
+                    <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
                         <div class="flex justify-between text-xs">
-                            <span class="text-slate-400">Model:</span>
-                            <span class="font-semibold text-emerald-400">GPT-OSS 20B</span>
+                            <span class="text-slate-500">Model:</span>
+                            <span class="font-semibold text-blue-600">GPT-OSS 20B</span>
                         </div>
                         <div class="flex justify-between text-xs">
-                            <span class="text-slate-400">Status:</span>
-                            <span class="font-semibold text-emerald-400">Active & Ready</span>
+                            <span class="text-slate-500">Status:</span>
+                            <span class="font-semibold text-green-600">Online & Ready</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="border-t border-slate-700/60 pt-4 text-xs text-slate-500 text-center">
+                <div class="border-t border-slate-100 pt-4 text-xs text-slate-400 text-center">
                     AI Teacher Dashboard &bull; By Lucas Tang
                 </div>
             </div>
 
-            <!-- Right Workspace Panel -->
-            <div class="md:col-span-2 bg-slate-800 p-6 rounded-3xl border border-slate-700/80 shadow-xl flex flex-col justify-between">
+            <!-- Right Workspace Panel with Larger Response Box -->
+            <div class="md:col-span-2 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-base font-bold text-white">✨ AI Assistant Workspace</h2>
-                        <span class="text-xs bg-emerald-500/15 text-emerald-300 font-semibold px-2.5 py-1 rounded-lg border border-emerald-500/30">Prompt Engineering Active</span>
+                        <h2 class="text-base font-bold text-slate-900">✨ AI Co-Teacher Workspace</h2>
+                        <span class="text-xs bg-blue-50 text-blue-600 font-semibold px-2.5 py-1 rounded-lg border border-blue-100">MagicSchool Suite Active</span>
                     </div>
-                    <p class="text-xs text-slate-400 mb-4">Provide details below. The AI will apply your selected grade level and custom task type automatically.</p>
+                    <p class="text-xs text-slate-500 mb-4">Enter your prompt or scenario below. The AI will generate structured, professional teacher resources instantly.</p>
                     
-                    <!-- Chat Output Box -->
-                    <div id="ai-response-box" class="bg-slate-900 border border-slate-700 rounded-2xl p-5 h-72 overflow-y-auto text-sm text-slate-200 mb-4 whitespace-pre-wrap leading-relaxed">
-                        <span class="text-slate-500 italic">Generated goals, word problems, or custom teacher content will appear here...</span>
+                    <!-- Larger Chat Output Box (h-96 for more space) -->
+                    <div id="ai-response-box" class="bg-slate-50 border border-slate-200 rounded-2xl p-5 h-96 overflow-y-auto text-sm text-slate-800 mb-4 whitespace-pre-wrap leading-relaxed">
+                        <span class="text-slate-400 italic">Generated lesson plans, IPPs, rubrics, or emails will appear here...</span>
                     </div>
                 </div>
 
                 <!-- Prompt Input Area -->
                 <div class="flex space-x-3">
-                    <input type="text" id="ai-prompt" placeholder="e.g., Student struggles with multi-step word problems..." 
-                        class="flex-1 px-4 py-3.5 rounded-2xl bg-slate-900 border border-slate-700 text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition placeholder:text-slate-600"
+                    <input type="text" id="ai-prompt" placeholder="e.g., Create a 45-minute intro lesson on fractions for 8th graders..." 
+                        class="flex-1 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition placeholder:text-slate-400"
                         onkeypress="if(event.key === 'Enter') askAI()">
-                    <button onclick="askAI()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3.5 rounded-2xl font-semibold text-sm transition shadow-lg shadow-emerald-600/25 active:scale-95 flex items-center justify-center">
+                    <button onclick="askAI()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3.5 rounded-2xl font-semibold text-sm transition shadow-sm active:scale-95 flex items-center justify-center">
                         Generate
                     </button>
                 </div>
@@ -173,7 +194,6 @@
     <!-- JAVASCRIPT LOGIC & SESSION PERSISTENCE    -->
     <!-- ========================================== -->
     <script>
-        // Check persistent login session on startup
         window.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('ipp_logged_in_user');
             if (savedUser) {
@@ -282,7 +302,7 @@
             if (!prompt.trim()) return;
 
             const activeTaskDisplay = taskType === 'custom' ? (customTask || 'Custom Task') : taskType;
-            box.innerHTML = `<span class="text-emerald-400 animate-pulse font-medium">Engineering prompt for ${grade} (${activeTaskDisplay})...</span>`;
+            box.innerHTML = `<span class="text-blue-600 animate-pulse font-medium">Generating ${activeTaskDisplay} for ${grade}...</span>`;
 
             try {
                 const res = await fetch('/api/ai', {
