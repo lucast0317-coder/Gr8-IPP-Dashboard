@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Teacher Dashboard - By Lucas Tang</title>
+    <title>AI Teacher Dashboard - By Lucas Tang 8-42</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -93,7 +93,7 @@
                         <p class="text-xs text-slate-400">Configure parameters for your AI assistant.</p>
                     </div>
 
-                    <!-- Grade Level Dropdown (Includes Gr. 9) -->
+                    <!-- Grade Level Dropdown -->
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Select Grade Level</label>
                         <select id="grade-select" class="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
@@ -126,7 +126,7 @@
                     <div class="p-3 bg-slate-900/60 rounded-2xl border border-slate-700 space-y-2">
                         <div class="flex justify-between text-xs">
                             <span class="text-slate-400">Model:</span>
-                            <span class="font-semibold text-emerald-400">Llama 3.1 8B</span>
+                            <span class="font-semibold text-emerald-400">GPT-OSS 20B</span>
                         </div>
                         <div class="flex justify-between text-xs">
                             <span class="text-slate-400">Status:</span>
@@ -218,7 +218,6 @@
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    // Save persistently to localStorage
                     localStorage.setItem('ipp_logged_in_user', data.username);
                     showDashboard(data.username);
                 } else {

@@ -69,7 +69,7 @@ app.post(['/api/login', '/api/auth/login'], (req, res) => {
     });
 });
 
-// Groq AI Integration Endpoint using llama-3.1-8b-instant
+// Groq AI Integration Endpoint using updated available model
 app.post('/api/ai', async (req, res) => {
     const { prompt, grade, taskType, customTask } = req.body;
 
@@ -91,7 +91,7 @@ app.post('/api/ai', async (req, res) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: 'llama-3.1-8b-instant',
+                model: 'openai/gpt-oss-20b',
                 messages: [
                     { role: 'system', content: systemRole },
                     { role: 'user', content: refinedPrompt }
