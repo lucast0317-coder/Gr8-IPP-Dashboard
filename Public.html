@@ -64,10 +64,9 @@
     <!-- VIEW 2: MAIN DASHBOARD SCREEN              -->
     <!-- ========================================== -->
     <div id="dashboard-view" class="hidden flex-1 flex flex-col">
-        <!-- Header Bar with Google Colored Logo Accent -->
+        <!-- Header Bar -->
         <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center shadow-xs">
             <div class="flex items-center space-x-3">
-                <!-- Google 4-color dot layout badge -->
                 <div class="flex space-x-1 p-2 bg-slate-100 rounded-xl border border-slate-200">
                     <span class="w-2 h-2 rounded-full bg-blue-500"></span>
                     <span class="w-2 h-2 rounded-full bg-red-500"></span>
@@ -100,7 +99,7 @@
                             <span class="w-2.5 h-2.5 rounded-full bg-green-500 mr-2 inline-block"></span>
                             AI Tool Suite
                         </h2>
-                        <p class="text-xs text-slate-500">MagicSchool & IPP Assistant presets.</p>
+                        <p class="text-xs text-slate-500">Configure grade levels, tasks, & AI personality.</p>
                     </div>
 
                     <!-- Grade Level Dropdown -->
@@ -114,7 +113,7 @@
                         </select>
                     </div>
 
-                    <!-- Expanded Task Type Dropdown (MagicSchool inspired) -->
+                    <!-- Task Type Dropdown -->
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Select Tool / Task</label>
                         <select id="task-select" onchange="toggleCustomTaskInput()" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
@@ -144,6 +143,13 @@
                             class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-blue-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition">
                     </div>
 
+                    <!-- NEW: Custom AI Personality / Tone Input -->
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">AI Personality / Tone</label>
+                        <input type="text" id="ai-personality-input" placeholder="e.g., Be encouraging, formal, or concise..." 
+                            class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition placeholder:text-slate-400">
+                    </div>
+
                     <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
                         <div class="flex justify-between text-xs">
                             <span class="text-slate-500">Model:</span>
@@ -161,16 +167,16 @@
                 </div>
             </div>
 
-            <!-- Right Workspace Panel with Larger Response Box -->
+            <!-- Right Workspace Panel -->
             <div class="md:col-span-2 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-base font-bold text-slate-900">✨ AI Co-Teacher Workspace</h2>
-                        <span class="text-xs bg-blue-50 text-blue-600 font-semibold px-2.5 py-1 rounded-lg border border-blue-100">MagicSchool Suite Active</span>
+                        <span class="text-xs bg-blue-50 text-blue-600 font-semibold px-2.5 py-1 rounded-lg border border-blue-100">Prompt Engineering Active</span>
                     </div>
-                    <p class="text-xs text-slate-500 mb-4">Enter your prompt or scenario below. The AI will generate structured, professional teacher resources instantly.</p>
+                    <p class="text-xs text-slate-500 mb-4">Enter your prompt below. The AI will apply your selected grade level, tool, and custom personality.</p>
                     
-                    <!-- Larger Chat Output Box (h-96 for more space) -->
+                    <!-- Larger Chat Output Box (h-96) -->
                     <div id="ai-response-box" class="bg-slate-50 border border-slate-200 rounded-2xl p-5 h-96 overflow-y-auto text-sm text-slate-800 mb-4 whitespace-pre-wrap leading-relaxed">
                         <span class="text-slate-400 italic">Generated lesson plans, IPPs, rubrics, or emails will appear here...</span>
                     </div>
@@ -191,7 +197,7 @@
     </div>
 
     <!-- ========================================== -->
-    <!-- JAVASCRIPT LOGIC & SESSION PERSISTENCE    -->
+    <!-- JAVASCRIPT LOGIC                           -->
     <!-- ========================================== -->
     <script>
         window.addEventListener('DOMContentLoaded', () => {
@@ -297,6 +303,7 @@
             const grade = document.getElementById('grade-select').value;
             const taskType = document.getElementById('task-select').value;
             const customTask = document.getElementById('custom-task-input').value;
+            const aiPersonality = document.getElementById('ai-personality-input').value;
             const box = document.getElementById('ai-response-box');
 
             if (!prompt.trim()) return;
@@ -308,7 +315,7 @@
                 const res = await fetch('/api/ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt, grade, taskType, customTask })
+                    body: JSON.stringify({ prompt, grade, taskType, customTask, aiPersonality })
                 });
                 const data = await res.json();
                 if (res.ok) {

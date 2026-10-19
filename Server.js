@@ -69,17 +69,19 @@ app.post(['/api/login', '/api/auth/login'], (req, res) => {
     });
 });
 
-// Groq AI Integration Endpoint supporting MagicSchool-style expanded tasks
+// Groq AI Integration Endpoint supporting Custom AI Personality & Task Types
 app.post('/api/ai', async (req, res) => {
-    const { prompt, grade, taskType, customTask } = req.body;
+    const { prompt, grade, taskType, customTask, aiPersonality } = req.body;
 
     if (!GROQ_API_KEY) {
         return res.status(500).json({ error: 'GROQ_API_KEY is missing from environment variables on Render.' });
     }
 
     const activeTask = taskType === 'custom' ? (customTask || 'Custom Teacher Task') : taskType;
+    const basePersonality = aiPersonality && aiPersonality.trim() !== '' 
+        ? aiPersonality.trim() 
+        : 'You are an expert AI co-teacher and educational assistant helping teachers design high-quality lesson plans, draft Individual Program Plans (IPPs), build assessments, and structure accommodations.';
 
-    let systemRole = 'You are an expert AI co-teacher and educational assistant (inspired by MagicSchool AI tools). You help teachers design high-quality lesson plans, draft Individual Program Plans (IPPs), build assessments, write professional parent emails, and structure accommodations.';
     let refinedPrompt = `Target Grade Level: ${grade || 'Grade 8'}\nSelected Tool / Task Type: ${activeTask}\n\nTeacher Request Details: ${prompt}`;
 
     try {
@@ -92,7 +94,7 @@ app.post('/api/ai', async (req, res) => {
             body: JSON.stringify({
                 model: 'openai/gpt-oss-20b',
                 messages: [
-                    { role: 'system', content: systemRole },
+                    { role: 'system', content: basePersonality },
                     { role: 'user', content: refinedPrompt }
                 ],
                 temperature: 0.7
