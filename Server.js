@@ -69,7 +69,7 @@ app.post(['/api/login', '/api/auth/login'], (req, res) => {
     });
 });
 
-// Groq AI Integration Endpoint supporting dynamic custom tasks
+// Groq AI Integration Endpoint using llama-3.1-8b-instant
 app.post('/api/ai', async (req, res) => {
     const { prompt, grade, taskType, customTask } = req.body;
 
@@ -77,7 +77,7 @@ app.post('/api/ai', async (req, res) => {
         return res.status(500).json({ error: 'GROQ_API_KEY is missing from environment variables on Render.' });
     }
 
-    // Determine the active task category (handles custom user-created tasks)
+    // Determine active task category
     const activeTask = taskType === 'custom' ? (customTask || 'Custom Teacher Task') : taskType;
 
     let systemRole = 'You are an expert educational assistant for teachers helping write Individual Program Plans (IPPs) and classroom resources.';
@@ -87,11 +87,11 @@ app.post('/api/ai', async (req, res) => {
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${GROQ_API_KEY}`,
+                'Authorization': `Bearer ${GROQ_API_KEY.trim()}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: 'llama-3.3-70b-versatile',
+                model: 'llama-3.1-8b-instant',
                 messages: [
                     { role: 'system', content: systemRole },
                     { role: 'user', content: refinedPrompt }
