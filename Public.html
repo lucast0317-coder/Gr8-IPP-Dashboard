@@ -7,6 +7,8 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- html2pdf Library for Exporting Output to PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
     </style>
@@ -143,7 +145,7 @@
                             class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-blue-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition">
                     </div>
 
-                    <!-- NEW: Custom AI Personality / Tone Input -->
+                    <!-- Custom AI Personality / Tone Input -->
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">AI Personality / Tone</label>
                         <input type="text" id="ai-personality-input" placeholder="e.g., Be encouraging, formal, or concise..." 
@@ -176,9 +178,31 @@
                     </div>
                     <p class="text-xs text-slate-500 mb-4">Enter your prompt below. The AI will apply your selected grade level, tool, and custom personality.</p>
                     
-                    <!-- Larger Chat Output Box (h-96) -->
-                    <div id="ai-response-box" class="bg-slate-50 border border-slate-200 rounded-2xl p-5 h-96 overflow-y-auto text-sm text-slate-800 mb-4 whitespace-pre-wrap leading-relaxed">
+                    <!-- Response Box -->
+                    <div id="ai-response-box" class="bg-slate-50 border border-slate-200 rounded-2xl p-5 h-80 overflow-y-auto text-sm text-slate-800 mb-4 whitespace-pre-wrap leading-relaxed">
                         <span class="text-slate-400 italic">Generated lesson plans, IPPs, rubrics, or emails will appear here...</span>
+                    </div>
+
+                    <!-- EXPORT BUTTON BAR -->
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Export Response:</span>
+                        <div class="flex items-center space-x-2">
+                            <!-- Export PDF Button -->
+                            <button onclick="exportToPDF()" class="bg-red-50 hover:bg-red-100 text-red-700 font-semibold text-xs px-3.5 py-2 rounded-xl border border-red-200 transition active:scale-95 flex items-center space-x-1.5">
+                                <span>📄</span>
+                                <span>PDF</span>
+                            </button>
+                            <!-- Export Google Drive Button -->
+                            <button onclick="exportToGoogleDrive()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-xs px-3.5 py-2 rounded-xl border border-blue-200 transition active:scale-95 flex items-center space-x-1.5">
+                                <span>📂</span>
+                                <span>Google Drive</span>
+                            </button>
+                            <!-- Export Gmail Button -->
+                            <button onclick="exportToGmail()" class="bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold text-xs px-3.5 py-2 rounded-xl border border-amber-200 transition active:scale-95 flex items-center space-x-1.5">
+                                <span>✉️</span>
+                                <span>Gmail</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -327,6 +351,67 @@
                 console.error(err);
                 box.innerText = 'Error connecting to AI service.';
             }
+        }
+
+        /* EXPORT FUNCTIONS */
+        function exportToPDF() {
+            const content = document.getElementById('ai-response-box').innerText;
+            if (!content || content.includes('Generated lesson plans')) {
+                alert('Please generate an AI response first before exporting.');
+                return;
+            }
+
+            const element = document.createElement('div');
+            element.style.padding = '25px';
+            element.style.fontFamily = 'sans-serif';
+            element.style.fontSize = '12pt';
+            element.style.lineHeight = '1.6';
+            element.innerHTML = `
+                <h2 style="color: #2563eb; font-size: 18pt; margin-bottom: 5px;">AI Teacher Dashboard Output</h2>
+                <p style="color: #64748b; font-size: 10pt; margin-bottom: 20px;">Created by Lucas Tang &bull; Grade IPP Tool</p>
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;" />
+                <div style="white-space: pre-wrap;">${content}</div>
+            `;
+
+            const opt = {
+                margin:       0.5,
+                filename:     'Teacher_AI_Document.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+
+        function exportToGoogleDrive() {
+            const content = document.getElementById('ai-response-box').innerText;
+            if (!content || content.includes('Generated lesson plans')) {
+                alert('Please generate an AI response first before exporting.');
+                return;
+            }
+
+            // Copy text to clipboard and open Google Docs for effortless pasting
+            navigator.clipboard.writeText(content).then(() => {
+                alert('AI Response copied to clipboard! Opening Google Docs where you can paste (Ctrl+V) it directly.');
+                window.open('https://docs.google.com/document/create', '_blank');
+            }).catch(() => {
+                window.open('https://docs.google.com/document/create', '_blank');
+            });
+        }
+
+        function exportToGmail() {
+            const content = document.getElementById('ai-response-box').innerText;
+            if (!content || content.includes('Generated lesson plans')) {
+                alert('Please generate an AI response first before exporting.');
+                return;
+            }
+
+            const subject = encodeURIComponent('AI Teacher Dashboard Resource');
+            const body = encodeURIComponent(content);
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`;
+            
+            window.open(gmailUrl, '_blank');
         }
     </script>
 </body>
