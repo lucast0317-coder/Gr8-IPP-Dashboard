@@ -69,7 +69,7 @@ app.post(['/api/login', '/api/auth/login'], (req, res) => {
     });
 });
 
-// Groq AI Integration Endpoint supporting Custom AI Personality & Task Types
+// Groq AI Integration Endpoint strictly enforcing user-defined personality
 app.post('/api/ai', async (req, res) => {
     const { prompt, grade, taskType, customTask, aiPersonality } = req.body;
 
@@ -78,9 +78,12 @@ app.post('/api/ai', async (req, res) => {
     }
 
     const activeTask = taskType === 'custom' ? (customTask || 'Custom Teacher Task') : taskType;
-    const basePersonality = aiPersonality && aiPersonality.trim() !== '' 
-        ? aiPersonality.trim() 
-        : 'You are an expert AI co-teacher and educational assistant helping teachers design high-quality lesson plans, draft Individual Program Plans (IPPs), build assessments, and structure accommodations.';
+
+    // Enforce custom personality directives explicitly
+    let systemRole = 'You are an expert AI co-teacher helping write Individual Program Plans (IPPs) and classroom resources.';
+    if (aiPersonality && aiPersonality.trim() !== '') {
+        systemRole = `STRICT INSTRUCTION - Adopt the following tone and personality for all responses: "${aiPersonality.trim()}". You are an expert AI co-teacher helping write Individual Program Plans (IPPs) and classroom resources.`;
+    }
 
     let refinedPrompt = `Target Grade Level: ${grade || 'Grade 8'}\nSelected Tool / Task Type: ${activeTask}\n\nTeacher Request Details: ${prompt}`;
 
@@ -94,7 +97,7 @@ app.post('/api/ai', async (req, res) => {
             body: JSON.stringify({
                 model: 'openai/gpt-oss-20b',
                 messages: [
-                    { role: 'system', content: basePersonality },
+                    { role: 'system', content: systemRole },
                     { role: 'user', content: refinedPrompt }
                 ],
                 temperature: 0.7
