@@ -9,8 +9,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- html2pdf Library for Exporting Output to PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- Marked.js Library for Rendering Markdown (**bold**, lists, headers) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
+        /* Custom styling for markdown elements rendered inside response box */
+        #ai-response-box strong, #ai-response-box b { font-weight: 700; color: #0f172a; }
+        #ai-response-box ul { list-style-type: disc; margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem; }
+        #ai-response-box ol { list-style-type: decimal; margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem; }
+        #ai-response-box h1, #ai-response-box h2, #ai-response-box h3 { font-weight: 700; color: #1e293b; margin-top: 1rem; margin-bottom: 0.5rem; }
+        #ai-response-box p { margin-bottom: 0.75rem; }
     </style>
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col selection:bg-blue-500 selection:text-white relative">
@@ -52,6 +60,13 @@
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Password</label>
                     <input type="password" id="password" placeholder="Enter your password" 
                         class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition placeholder:text-slate-400">
+                </div>
+
+                <!-- Show Password Checkbox Option -->
+                <div class="flex items-center space-x-2 pt-1">
+                    <input type="checkbox" id="show-password-checkbox" onclick="togglePasswordVisibility()" 
+                        class="w-4 h-4 text-blue-600 rounded border-slate-300 focus:ring-blue-500 cursor-pointer">
+                    <label for="show-password-checkbox" class="text-xs font-medium text-slate-600 cursor-pointer select-none">Show password</label>
                 </div>
                 
                 <div id="auth-error" class="hidden text-xs text-red-600 font-medium bg-red-50 p-3 rounded-xl border border-red-200 text-center"></div>
@@ -183,12 +198,12 @@
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-base font-bold text-slate-900">✨ AI Co-Teacher Workspace</h2>
-                        <span class="text-xs bg-blue-50 text-blue-600 font-semibold px-2.5 py-1 rounded-lg border border-blue-100">Prompt Engineering Active</span>
+                        <span class="text-xs bg-blue-50 text-blue-600 font-semibold px-2.5 py-1 rounded-lg border border-blue-100">Prompt Engineering & Markdown Active</span>
                     </div>
                     <p class="text-xs text-slate-500 mb-4">Enter your prompt below. The AI will apply your selected grade level, tool, and custom personality.</p>
                     
-                    <!-- Elongated & Distinct Response Box (h-[28rem] height with distinctive slate-blue tint) -->
-                    <div id="ai-response-box" class="bg-slate-50/90 border-2 border-blue-100 rounded-2xl p-5 h-[28rem] overflow-y-auto text-sm text-slate-800 mb-4 whitespace-pre-wrap leading-relaxed shadow-inner">
+                    <!-- Elongated & Distinct Response Box with Markdown Support -->
+                    <div id="ai-response-box" class="bg-slate-50/90 border-2 border-blue-100 rounded-2xl p-5 h-[28rem] overflow-y-auto text-sm text-slate-800 mb-4 whitespace-normal leading-relaxed shadow-inner">
                         <span class="text-slate-400 italic">Generated lesson plans, IPPs, rubrics, or emails will appear here...</span>
                     </div>
 
@@ -244,6 +259,15 @@
             document.getElementById('auth-view').classList.add('hidden');
             document.getElementById('dashboard-view').classList.remove('hidden');
             document.getElementById('user-display').innerText = `Teacher: ${username}`;
+        }
+
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
         }
 
         function toggleCustomTaskInput() {
@@ -329,6 +353,8 @@
             document.getElementById('auth-view').classList.remove('hidden');
             document.getElementById('username').value = '';
             document.getElementById('password').value = '';
+            document.getElementById('show-password-checkbox').checked = false;
+            document.getElementById('password').type = 'password';
         }
 
         async function askAI() {
@@ -352,7 +378,8 @@
                 });
                 const data = await res.json();
                 if (res.ok) {
-                    box.innerText = data.result;
+                    // Use Marked.js to parse Markdown (**bold**, lists, headers) into HTML
+                    box.innerHTML = marked.parse(data.result);
                 } else {
                     box.innerText = 'Error: ' + (data.error || 'Failed to generate');
                 }
@@ -364,7 +391,7 @@
 
         /* EXPORT FUNCTIONS */
         function exportToPDF() {
-            const content = document.getElementById('ai-response-box').innerText;
+            const content = document.getElementById('ai-response-box').innerHTML;
             if (!content || content.includes('Generated lesson plans')) {
                 alert('Please generate an AI response first before exporting.');
                 return;
@@ -379,7 +406,7 @@
                 <h2 style="color: #2563eb; font-size: 18pt; margin-bottom: 5px;">AI Teacher Dashboard Output</h2>
                 <p style="color: #64748b; font-size: 10pt; margin-bottom: 20px;">Created by Lucas Tang &bull; Grade IPP Tool</p>
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;" />
-                <div style="white-space: pre-wrap;">${content}</div>
+                <div>${content}</div>
             `;
 
             const opt = {

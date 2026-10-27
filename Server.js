@@ -79,10 +79,9 @@ app.post('/api/ai', async (req, res) => {
 
     const activeTask = taskType === 'custom' ? (customTask || 'Custom Teacher Task') : taskType;
 
-    // Enforce custom personality directives explicitly
-    let systemRole = 'You are an expert AI co-teacher helping write Individual Program Plans (IPPs) and classroom resources.';
+    let systemRole = 'You are an expert AI co-teacher helping write Individual Program Plans (IPPs) and classroom resources. Use Markdown formatting (such as **bold**, bullet points, and headers) to organize your responses clearly.';
     if (aiPersonality && aiPersonality.trim() !== '') {
-        systemRole = `STRICT INSTRUCTION - Adopt the following tone and personality for all responses: "${aiPersonality.trim()}". You are an expert AI co-teacher helping write Individual Program Plans (IPPs) and classroom resources.`;
+        systemRole = `STRICT INSTRUCTION - Adopt the following tone and personality for all responses: "${aiPersonality.trim()}". You are an expert AI co-teacher helping write Individual Program Plans (IPPs) and classroom resources. Use Markdown formatting (**bold**, bullet points, headers) to structure your output.`;
     }
 
     let refinedPrompt = `Target Grade Level: ${grade || 'Grade 8'}\nSelected Tool / Task Type: ${activeTask}\n\nTeacher Request Details: ${prompt}`;
