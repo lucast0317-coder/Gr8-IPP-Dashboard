@@ -215,9 +215,9 @@
                     <div>
                         <h2 class="text-base font-bold text-slate-900 mb-1 flex items-center">
                             <span class="w-2.5 h-2.5 rounded-full bg-green-500 mr-2 inline-block"></span>
-                            CBE AI Tool Suite
+                            AI Tool Suite
                         </h2>
-                        <p class="text-xs text-slate-500">Calgary Board of Education aligned presets.</p>
+                        <p class="text-xs text-slate-500">Configure grade levels, subjects, & tasks.</p>
                     </div>
 
                     <!-- Grade Level Dropdown -->
@@ -231,23 +231,39 @@
                         </select>
                     </div>
 
-                    <!-- Streamlined CBE Task Type Dropdown -->
+                    <!-- Subject & Task Structured Dropdown -->
                     <div>
-                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Select Tool / Task</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Select Tool / Subject Task</label>
                         <select id="task-select" onchange="toggleTaskOptions()" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-                            <option value="Lesson Plan Generator">CBE Lesson Plan Generator</option>
-                            <option value="Quiz / Assessment Builder">CBE Quiz / Assessment Builder</option>
-                            <option value="Science Word Problem">CBE Science Word Problem</option>
-                            <option value="Simplify Text">Simplify Reading Level (CBE)</option>
-                            <option value="Rubric Creator">CBE Rubric Creator</option>
-                            <option value="Email to Parent">Professional Email to Parent</option>
+                            <optgroup label="Science Tools">
+                                <option value="Science Word Problem">Science Word Problem / Scenario</option>
+                                <option value="Science Lesson Plan">Science Lesson Plan Generator</option>
+                            </optgroup>
+                            <optgroup label="Math Tools">
+                                <option value="Math Word Problem">Math Word Problem Generator</option>
+                                <option value="Math Practice Quiz">Math Practice Quiz Builder</option>
+                            </optgroup>
+                            <optgroup label="ELA Tools">
+                                <option value="Simplify Text">Simplify Text / Reading Level</option>
+                                <option value="ELA Writing Prompt">ELA Writing Prompt & Rubric</option>
+                            </optgroup>
+                            <optgroup label="Social Studies Tools">
+                                <option value="Social Studies Inquiry">Social Studies Inquiry Question</option>
+                                <option value="Primary Source Analysis">Primary Source Analysis Guide</option>
+                            </optgroup>
+                            <optgroup label="General / Assessment">
+                                <option value="Lesson Plan Generator">General Lesson Plan Generator</option>
+                                <option value="Quiz / Assessment Builder">Quiz / Assessment Builder</option>
+                                <option value="Rubric Creator">Rubric Creator</option>
+                                <option value="Email to Parent">Professional Email to Parent</option>
+                            </optgroup>
                             <option value="custom">Add Your Own...</option>
                         </select>
                     </div>
 
                     <!-- Science Unit Input (Shows only when Science Word Problem is selected) -->
                     <div id="science-unit-container" class="hidden">
-                        <label class="block text-xs font-bold uppercase tracking-wider text-emerald-600 mb-2">CBE Science Unit</label>
+                        <label class="block text-xs font-bold uppercase tracking-wider text-emerald-600 mb-2">Science Unit Focus</label>
                         <select id="science-unit-select" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-emerald-300 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
                             <option value="Cells and Systems">Cells and Systems</option>
                             <option value="Fresh and Salt Water">Fresh and Salt Water</option>
@@ -260,7 +276,7 @@
                     <!-- Custom Task Input -->
                     <div id="custom-task-container" class="hidden">
                         <label class="block text-xs font-bold uppercase tracking-wider text-blue-600 mb-2">Custom Tool Name</label>
-                        <input type="text" id="custom-task-input" placeholder="e.g., Social Studies Activity..." 
+                        <input type="text" id="custom-task-input" placeholder="e.g., Art History Activity..." 
                             class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-blue-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition">
                     </div>
 
@@ -292,14 +308,14 @@
             <div class="md:col-span-2 bg-white p-6 rounded-3xl border-2 border-slate-200/80 shadow-md flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-center mb-4">
-                        <h2 class="text-base font-bold text-slate-900">CBE Co-Teacher Workspace</h2>
-                        <span class="text-xs bg-blue-50 text-blue-600 font-semibold px-2.5 py-1 rounded-lg border border-blue-100">CBE Aligned & Markdown Active</span>
+                        <h2 class="text-base font-bold text-slate-900">AI Co-Teacher Workspace</h2>
+                        <span class="text-xs bg-blue-50 text-blue-600 font-semibold px-2.5 py-1 rounded-lg border border-blue-100">Curriculum Aligned & Markdown Active</span>
                     </div>
-                    <p class="text-xs text-slate-500 mb-4">Enter your prompt below. Responses will connect directly to Calgary Board of Education outcomes.</p>
+                    <p class="text-xs text-slate-500 mb-4">Enter your prompt below. The AI will generate structured curriculum resources instantly.</p>
                     
                     <!-- Response Box -->
                     <div id="ai-response-box" class="bg-slate-50/90 border-2 border-blue-100 rounded-2xl p-5 h-[28rem] overflow-y-auto text-sm text-slate-800 mb-4 whitespace-normal leading-relaxed shadow-inner">
-                        <span class="text-slate-400 italic">Generated CBE lesson plans, quizzes, or science problems will appear here...</span>
+                        <span class="text-slate-400 italic">Generated lesson plans, quizzes, word problems, or prompts will appear here...</span>
                     </div>
 
                     <!-- EXPORT BUTTON BAR -->
@@ -511,7 +527,7 @@
 
             if (taskSelect === 'custom') {
                 customContainer.classList.remove('hidden');
-            } else if (taskSelect === 'Science Word Problem') {
+            } else if (taskSelect === 'Science Word Problem' || taskSelect === 'Science Lesson Plan') {
                 scienceContainer.classList.remove('hidden');
             }
         }
@@ -603,7 +619,7 @@
             if (!prompt.trim()) return;
 
             const activeTaskDisplay = taskType === 'custom' ? (customTask || 'Custom Task') : taskType;
-            box.innerHTML = `<span class="text-blue-600 animate-pulse font-medium">Generating ${activeTaskDisplay} for ${grade} (CBE Aligned)...</span>`;
+            box.innerHTML = `<span class="text-blue-600 animate-pulse font-medium">Generating ${activeTaskDisplay} for ${grade}...</span>`;
 
             try {
                 const res = await fetch('/api/ai', {
@@ -625,7 +641,7 @@
         /* EXPORT FUNCTIONS */
         function exportToPDF() {
             const content = document.getElementById('ai-response-box').innerHTML;
-            if (!content || content.includes('Generated CBE lesson plans')) {
+            if (!content || content.includes('Generated lesson plans')) {
                 alert('Please generate an AI response first before exporting.');
                 return;
             }
@@ -636,15 +652,15 @@
             element.style.fontSize = '12pt';
             element.style.lineHeight = '1.6';
             element.innerHTML = `
-                <h2 style="color: #2563eb; font-size: 18pt; margin-bottom: 5px;">CBE AI Teacher Dashboard Output</h2>
-                <p style="color: #64748b; font-size: 10pt; margin-bottom: 20px;">Created by Lucas Tang &bull; Calgary Board of Education Aligned</p>
+                <h2 style="color: #2563eb; font-size: 18pt; margin-bottom: 5px;">AI Teacher Dashboard Output</h2>
+                <p style="color: #64748b; font-size: 10pt; margin-bottom: 20px;">Created by Lucas Tang &bull; Curriculum Aligned Resource</p>
                 <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 20px;" />
                 <div>${content}</div>
             `;
 
             const opt = {
                 margin:       0.5,
-                filename:     'CBE_Teacher_Document.pdf',
+                filename:     'Teacher_AI_Document.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2 },
                 jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
@@ -655,7 +671,7 @@
 
         function exportToGoogleDrive() {
             const content = document.getElementById('ai-response-box').innerText;
-            if (!content || content.includes('Generated CBE lesson plans')) {
+            if (!content || content.includes('Generated lesson plans')) {
                 alert('Please generate an AI response first before exporting.');
                 return;
             }
@@ -670,12 +686,12 @@
 
         function exportToGmail() {
             const content = document.getElementById('ai-response-box').innerText;
-            if (!content || content.includes('Generated CBE lesson plans')) {
+            if (!content || content.includes('Generated lesson plans')) {
                 alert('Please generate an AI response first before exporting.');
                 return;
             }
 
-            const subject = encodeURIComponent('CBE AI Teacher Dashboard Resource');
+            const subject = encodeURIComponent('AI Teacher Dashboard Resource');
             const body = encodeURIComponent(content);
             const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`;
             
