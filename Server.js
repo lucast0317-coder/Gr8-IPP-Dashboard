@@ -112,26 +112,27 @@ app.get('/api/system/status', (req, res) => {
     });
 });
 
-// Groq AI Integration Endpoint (Respects Server Lockdown)
+// Groq AI Integration Endpoint tailored for CBE Grade 8 Curriculum
 app.post('/api/ai', async (req, res) => {
     if (isServerLockedDown) {
         return res.status(503).json({ error: 'Server is currently in Lockdown Mode by an administrator. No AI calls are permitted until reopened.' });
     }
 
-    const { prompt, grade, taskType, customTask, aiPersonality } = req.body;
+    const { prompt, grade, taskType, customTask, aiPersonality, scienceUnit } = req.body;
 
     if (!GROQ_API_KEY) {
         return res.status(500).json({ error: 'GROQ_API_KEY is missing from environment variables on Render.' });
     }
 
     const activeTask = taskType === 'custom' ? (customTask || 'Custom Teacher Task') : taskType;
+    const scienceUnitInfo = scienceUnit && scienceUnit.trim() !== '' ? `CBE Science Unit: ${scienceUnit.trim()}` : '';
 
-    let systemRole = 'You are an expert AI co-teacher helping write Individual Program Plans (IPPs) and classroom resources. Use Markdown formatting (such as **bold**, bullet points, and headers) to organize your responses clearly.';
+    let systemRole = 'You are an expert educational assistant aligned with the Calgary Board of Education (CBE) curriculum. Always connect generated content directly to CBE guidelines and outcomes. Use Markdown formatting (such as **bold**, bullet points, and headers) to organize your responses clearly.';
     if (aiPersonality && aiPersonality.trim() !== '') {
-        systemRole = `STRICT INSTRUCTION - Adopt the following tone and personality for all responses: "${aiPersonality.trim()}". You are an expert AI co-teacher helping write Individual Program Plans (IPPs) and classroom resources. Use Markdown formatting (**bold**, bullet points, headers) to structure your output.`;
+        systemRole = `STRICT INSTRUCTION - Adopt the following tone and personality for all responses: "${aiPersonality.trim()}". You are an expert educational assistant aligned with the Calgary Board of Education (CBE) curriculum. Use Markdown formatting (**bold**, bullet points, headers) to structure your output.`;
     }
 
-    let refinedPrompt = `Target Grade Level: ${grade || 'Grade 8'}\nSelected Tool / Task Type: ${activeTask}\n\nTeacher Request Details: ${prompt}`;
+    let refinedPrompt = `Target Grade Level: ${grade || 'Grade 8'}\nSelected Task Type: ${activeTask}\n${scienceUnitInfo}\n\nTeacher Request Details: ${prompt}`;
 
     try {
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
