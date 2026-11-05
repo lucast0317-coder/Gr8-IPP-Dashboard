@@ -6,6 +6,9 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
+// Admin Server Lockdown State
+let isServerLockedDown = false;
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -69,8 +72,43 @@ app.post(['/api/login', '/api/auth/login'], (req, res) => {
     });
 });
 
-// Groq AI Integration Endpoint strictly enforcing user-defined personality
+// Admin Authentication Check
+app.post('/api/admin/auth', (req, res) => {
+    const { password } = req.body;
+    if (password === 'password' || password === ':password') {
+        res.json({ success: true });
+    } else {
+        res.status(401).json({ error: 'Incorrect admin password.' });
+    }
+});
+
+// Admin Toggle Lockdown State
+app.post('/api/admin/lockdown', (req, res) => {
+    const { lockdown } = req.body;
+    isServerLockedDown = Boolean(lockdown);
+    res.json({ success: true, isServerLockedDown });
+});
+
+// Admin Get System Stats
+app.get('/api/admin/stats', (req, res) => {
+    db.get('SELECT COUNT(*) as count FROM users', (err, row) => {
+        if (err) {
+            return res.status(500).json({ error: 'Database error' });
+        }
+        res.json({
+            userCount: row.count,
+            isServerLockedDown,
+            uptime: process.uptime()
+        });
+    });
+});
+
+// Groq AI Integration Endpoint (Respects Server Lockdown)
 app.post('/api/ai', async (req, res) => {
+    if (isServerLockedDown) {
+        return res.status(503).json({ error: '🚨 Server is currently in Lockdown Mode by an administrator. No AI calls are permitted until reopened.' });
+    }
+
     const { prompt, grade, taskType, customTask, aiPersonality } = req.body;
 
     if (!GROQ_API_KEY) {
