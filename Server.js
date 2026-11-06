@@ -112,7 +112,7 @@ app.get('/api/system/status', (req, res) => {
     });
 });
 
-// Groq AI Integration Endpoint supporting subject-specific tasks
+// Groq AI Integration Endpoint
 app.post('/api/ai', async (req, res) => {
     if (isServerLockedDown) {
         return res.status(503).json({ error: 'Server is currently in Lockdown Mode by an administrator. No AI calls are permitted until reopened.' });

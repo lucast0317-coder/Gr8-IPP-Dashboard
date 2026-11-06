@@ -217,7 +217,6 @@
                             <span class="w-2.5 h-2.5 rounded-full bg-green-500 mr-2 inline-block"></span>
                             AI Tool Suite
                         </h2>
-                        <p class="text-xs text-slate-500">Configure grade levels, subjects, & tasks.</p>
                     </div>
 
                     <!-- Grade Level Dropdown -->
@@ -276,14 +275,14 @@
                     <!-- Custom Task Input -->
                     <div id="custom-task-container" class="hidden">
                         <label class="block text-xs font-bold uppercase tracking-wider text-blue-600 mb-2">Custom Tool Name</label>
-                        <input type="text" id="custom-task-input" placeholder="e.g., Art History Activity..." 
+                        <input type="text" id="custom-task-input" placeholder="Enter custom tool name" 
                             class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-blue-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition">
                     </div>
 
                     <!-- Custom AI Personality / Tone Input -->
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">AI Personality / Tone</label>
-                        <input type="text" id="ai-personality-input" placeholder="e.g., Encouraging, formal, or concise..." 
+                        <input type="text" id="ai-personality-input" placeholder="Enter AI tone or persona" 
                             class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition placeholder:text-slate-400">
                     </div>
 
@@ -309,9 +308,8 @@
                 <div>
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-base font-bold text-slate-900">AI Co-Teacher Workspace</h2>
-                        <span class="text-xs bg-blue-50 text-blue-600 font-semibold px-2.5 py-1 rounded-lg border border-blue-100">Curriculum Aligned & Markdown Active</span>
+                        <span class="text-xs bg-blue-50 text-blue-600 font-semibold px-2.5 py-1 rounded-lg border border-blue-100">Markdown Active</span>
                     </div>
-                    <p class="text-xs text-slate-500 mb-4">Enter your prompt below. The AI will generate structured curriculum resources instantly.</p>
                     
                     <!-- Response Box -->
                     <div id="ai-response-box" class="bg-slate-50/90 border-2 border-blue-100 rounded-2xl p-5 h-[28rem] overflow-y-auto text-sm text-slate-800 mb-4 whitespace-normal leading-relaxed shadow-inner">
@@ -335,9 +333,9 @@
                     </div>
                 </div>
 
-                <!-- Prompt Input Area -->
+                <!-- Prompt Input Area (Cleaned of example text) -->
                 <div class="flex space-x-3">
-                    <input type="text" id="ai-prompt" placeholder="e.g., Create a problem about water treatment or cellular structure..." 
+                    <input type="text" id="ai-prompt" placeholder="Enter prompt instructions..." 
                         class="flex-1 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition placeholder:text-slate-400"
                         onkeypress="if(event.key === 'Enter') askAI()">
                     <button onclick="askAI()" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3.5 rounded-2xl font-semibold text-sm transition shadow-sm active:scale-95 flex items-center justify-center">
