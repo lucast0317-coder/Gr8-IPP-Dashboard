@@ -28,9 +28,7 @@
     <div class="fixed bottom-0 left-0 w-32 h-32 bg-yellow-500/10 rounded-full blur-2xl pointer-events-none"></div>
     <div class="fixed bottom-0 right-0 w-32 h-32 bg-green-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-    <!-- ========================================== -->
-    <!-- BROADCAST ANNOUNCEMENT POPUP MODAL         -->
-    <!-- ========================================== -->
+    <!-- BROADCAST ANNOUNCEMENT POPUP MODAL -->
     <div id="broadcast-popup" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-md w-full shadow-2xl relative text-center">
             <h3 class="text-lg font-bold text-slate-900 mb-1">System Announcement</h3>
@@ -41,9 +39,7 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- ADMIN PASSWORD MODAL                       -->
-    <!-- ========================================== -->
+    <!-- ADMIN PASSWORD MODAL -->
     <div id="admin-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-sm w-full shadow-2xl relative">
             <div class="text-center mb-5">
@@ -67,17 +63,13 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- ADMIN CONTROL PANEL MODAL                  -->
-    <!-- ========================================== -->
+    <!-- ADMIN CONTROL PANEL MODAL -->
     <div id="admin-dashboard-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white border border-slate-200 rounded-3xl p-8 max-w-lg w-full shadow-2xl relative">
             <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
-                <div class="flex items-center space-x-3">
-                    <div>
-                        <h2 class="text-lg font-bold text-slate-900">System Admin Control Panel</h2>
-                        <p class="text-xs text-slate-500">Manage server lockdown & system settings</p>
-                    </div>
+                <div>
+                    <h2 class="text-lg font-bold text-slate-900">System Admin Control Panel</h2>
+                    <p class="text-xs text-slate-500">Manage server lockdown and system settings</p>
                 </div>
                 <button onclick="closeAdminDashboard()" class="text-slate-400 hover:text-slate-600 font-bold text-lg">&times;</button>
             </div>
@@ -127,9 +119,7 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- VIEW 1: LOGIN / REGISTER SCREEN            -->
-    <!-- ========================================== -->
+    <!-- VIEW 1: LOGIN / REGISTER SCREEN -->
     <div id="auth-view" class="flex-1 flex items-center justify-center p-6 relative z-10">
         <div class="max-w-md w-full bg-white border border-slate-200 rounded-3xl p-8 shadow-xl relative overflow-hidden">
             <div class="absolute top-0 left-0 right-0 h-1.5 flex">
@@ -176,11 +166,9 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- VIEW 2: MAIN DASHBOARD SCREEN              -->
-    <!-- ========================================== -->
+    <!-- VIEW 2: MAIN DASHBOARD SCREEN -->
     <div id="dashboard-view" class="hidden flex-1 flex flex-col relative z-10">
-        <!-- Header Bar - Click title 3 times to open admin panel -->
+        <!-- Header Bar (Click title 3 times to open admin panel) -->
         <header class="bg-white border-b border-slate-200 px-8 py-4 flex justify-between items-center shadow-xs">
             <div class="flex items-center space-x-3 cursor-pointer select-none" onclick="handleTitleClick()" title="Click 3 times for Admin System">
                 <div class="flex space-x-1 p-2 bg-slate-100 rounded-xl border border-slate-200">
@@ -198,6 +186,9 @@
                 <div id="user-display" class="text-sm font-medium text-slate-600 bg-slate-100 px-4 py-2 rounded-xl border border-slate-200">
                     <!-- Dynamic username -->
                 </div>
+                <button onclick="loadUserHistory()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-xs px-4 py-2.5 rounded-xl border border-blue-200 transition active:scale-95">
+                    View History Log
+                </button>
                 <button onclick="handleLogout()" class="bg-red-50 hover:bg-red-100 text-red-600 font-semibold text-xs px-4 py-2.5 rounded-xl border border-red-200 transition active:scale-95">
                     Sign Out
                 </button>
@@ -207,7 +198,7 @@
         <!-- Main Workspace -->
         <main class="flex-1 max-w-6xl w-full mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
 
-            <!-- Left Controls Card -->
+            <!-- Left Controls Card (Expanded Sidebar Features) -->
             <div class="bg-white p-6 rounded-3xl border-2 border-slate-200/80 shadow-md flex flex-col justify-between space-y-6 relative overflow-hidden">
                 <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-500 via-red-500 to-green-500"></div>
 
@@ -230,37 +221,42 @@
                         </select>
                     </div>
 
-                    <!-- Subject & Task Structured Dropdown -->
+                    <!-- Expanded Subject & Task Structured Dropdown -->
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Select Tool / Subject Task</label>
                         <select id="task-select" onchange="toggleTaskOptions()" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
                             <optgroup label="Science Tools">
                                 <option value="Science Word Problem">Science Word Problem / Scenario</option>
                                 <option value="Science Lesson Plan">Science Lesson Plan Generator</option>
+                                <option value="Lab Experiment Guide">Lab Experiment & Safety Guide</option>
                             </optgroup>
                             <optgroup label="Math Tools">
                                 <option value="Math Word Problem">Math Word Problem Generator</option>
                                 <option value="Math Practice Quiz">Math Practice Quiz Builder</option>
+                                <option value="Step-by-Step Problem Solver">Step-by-Step Equation Breakdown</option>
                             </optgroup>
                             <optgroup label="ELA Tools">
                                 <option value="Simplify Text">Simplify Text / Reading Level</option>
                                 <option value="ELA Writing Prompt">ELA Writing Prompt & Rubric</option>
+                                <option value="Reading Comprehension Quiz">Reading Comprehension Builder</option>
                             </optgroup>
                             <optgroup label="Social Studies Tools">
                                 <option value="Social Studies Inquiry">Social Studies Inquiry Question</option>
                                 <option value="Primary Source Analysis">Primary Source Analysis Guide</option>
+                                <option value="Historical Debate Prompt">Historical Debate Scenario</option>
                             </optgroup>
                             <optgroup label="General / Assessment">
                                 <option value="Lesson Plan Generator">General Lesson Plan Generator</option>
                                 <option value="Quiz / Assessment Builder">Quiz / Assessment Builder</option>
                                 <option value="Rubric Creator">Rubric Creator</option>
                                 <option value="Email to Parent">Professional Email to Parent</option>
+                                <option value="Behavior Reflection Sheet">Student Behavior Reflection Form</option>
                             </optgroup>
                             <option value="custom">Add Your Own...</option>
                         </select>
                     </div>
 
-                    <!-- Science Unit Input (Shows only when Science Word Problem is selected) -->
+                    <!-- Science Unit Input -->
                     <div id="science-unit-container" class="hidden">
                         <label class="block text-xs font-bold uppercase tracking-wider text-emerald-600 mb-2">Science Unit Focus</label>
                         <select id="science-unit-select" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-emerald-300 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 transition">
@@ -279,7 +275,7 @@
                             class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-blue-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm transition">
                     </div>
 
-                    <!-- Custom AI Personality / Tone Input -->
+                    <!-- Custom AI Personality Input -->
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">AI Personality / Tone</label>
                         <input type="text" id="ai-personality-input" placeholder="Enter AI tone or persona" 
@@ -311,7 +307,7 @@
                         <span class="text-xs bg-blue-50 text-blue-600 font-semibold px-2.5 py-1 rounded-lg border border-blue-100">Markdown Active</span>
                     </div>
                     
-                    <!-- Response Box -->
+                    <!-- Persistent Chat Log Response Container -->
                     <div id="ai-response-box" class="bg-slate-50/90 border-2 border-blue-100 rounded-2xl p-5 h-[28rem] overflow-y-auto text-sm text-slate-800 mb-4 whitespace-normal leading-relaxed shadow-inner">
                         <span class="text-slate-400 italic">Generated lesson plans, quizzes, word problems, or prompts will appear here...</span>
                     </div>
@@ -333,7 +329,7 @@
                     </div>
                 </div>
 
-                <!-- Prompt Input Area (Cleaned of example text) -->
+                <!-- Prompt Input Area -->
                 <div class="flex space-x-3">
                     <input type="text" id="ai-prompt" placeholder="Enter prompt instructions..." 
                         class="flex-1 px-4 py-3.5 rounded-2xl bg-slate-50 border border-slate-300 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm transition placeholder:text-slate-400"
@@ -347,11 +343,9 @@
         </main>
     </div>
 
-    <!-- ========================================== -->
-    <!-- JAVASCRIPT LOGIC                           -->
-    <!-- ========================================== -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // Secret Admin Click Counter
+        let loggedInUser = '';
         let titleClickCount = 0;
         let clickTimer = null;
 
@@ -474,7 +468,6 @@
             }
         }
 
-        // Poll server status every 5 seconds for broadcast popups
         setInterval(async () => {
             try {
                 const res = await fetch('/api/system/status');
@@ -487,9 +480,7 @@
                         localStorage.setItem('last_seen_broadcast', data.broadcastMessage);
                     }
                 }
-            } catch (err) {
-                // Ignore background polling errors
-            }
+            } catch (err) {}
         }, 5000);
 
         function closeBroadcastPopup() {
@@ -499,11 +490,13 @@
         window.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('ipp_logged_in_user');
             if (savedUser) {
+                loggedInUser = savedUser;
                 showDashboard(savedUser);
             }
         });
 
         function showDashboard(username) {
+            loggedInUser = username;
             document.getElementById('auth-view').classList.add('hidden');
             document.getElementById('dashboard-view').classList.remove('hidden');
             document.getElementById('user-display').innerText = `Teacher: ${username}`;
@@ -519,13 +512,12 @@
             const customContainer = document.getElementById('custom-task-container');
             const scienceContainer = document.getElementById('science-unit-container');
 
-            // Hide both first
             customContainer.classList.add('hidden');
             scienceContainer.classList.add('hidden');
 
             if (taskSelect === 'custom') {
                 customContainer.classList.remove('hidden');
-            } else if (taskSelect === 'Science Word Problem' || taskSelect === 'Science Lesson Plan') {
+            } else if (taskSelect.includes('Science')) {
                 scienceContainer.classList.remove('hidden');
             }
         }
@@ -595,8 +587,44 @@
             }
         }
 
+        async function loadUserHistory() {
+            if (!loggedInUser) return;
+            const box = document.getElementById('ai-response-box');
+            box.innerHTML = `<span class="text-blue-600 animate-pulse font-medium">Loading history logs for ${loggedInUser}...</span>`;
+
+            try {
+                const res = await fetch(`/api/logs/${loggedInUser}`);
+                const data = await res.json();
+                if (res.ok && data.logs.length > 0) {
+                    box.innerHTML = '';
+                    data.logs.forEach(log => {
+                        const historyHTML = `
+                            <div class="mb-6 pb-6 border-b border-slate-200">
+                                <div class="mb-2">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100">${log.grade} - ${log.taskType} (${log.timestamp})</span>
+                                    <p class="text-sm font-medium text-slate-900 mt-1.5 bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">${log.prompt}</p>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100">Saved AI Response</span>
+                                    <div class="text-sm text-slate-800 mt-1.5 bg-white p-4 rounded-xl border border-slate-200 shadow-xs leading-relaxed">
+                                        ${marked.parse(log.response)}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        box.insertAdjacentHTML('beforeend', historyHTML);
+                    });
+                } else {
+                    box.innerHTML = `<span class="text-slate-400 italic">No previous history logs found for ${loggedInUser}.</span>`;
+                }
+            } catch (err) {
+                box.innerText = 'Error loading history logs.';
+            }
+        }
+
         function handleLogout() {
             localStorage.removeItem('ipp_logged_in_user');
+            loggedInUser = '';
             document.getElementById('dashboard-view').classList.add('hidden');
             document.getElementById('auth-view').classList.remove('hidden');
             document.getElementById('username').value = '';
@@ -606,7 +634,8 @@
         }
 
         async function askAI() {
-            const prompt = document.getElementById('ai-prompt').value;
+            const promptInput = document.getElementById('ai-prompt');
+            const prompt = promptInput.value;
             const grade = document.getElementById('grade-select').value;
             const taskType = document.getElementById('task-select').value;
             const customTask = document.getElementById('custom-task-input').value;
@@ -616,23 +645,53 @@
 
             if (!prompt.trim()) return;
 
+            if (box.innerHTML.includes('Generated lesson plans')) {
+                box.innerHTML = '';
+            }
+
             const activeTaskDisplay = taskType === 'custom' ? (customTask || 'Custom Task') : taskType;
-            box.innerHTML = `<span class="text-blue-600 animate-pulse font-medium">Generating ${activeTaskDisplay} for ${grade}...</span>`;
+            const exchangeId = 'exchange_' + Date.now();
+
+            const newEntryHTML = `
+                <div class="mb-6 pb-6 border-b border-slate-200" id="${exchangeId}">
+                    <div class="mb-2">
+                        <span class="text-xs font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100">Human Prompt (${grade} - ${activeTaskDisplay})</span>
+                        <p class="text-sm font-medium text-slate-900 mt-1.5 bg-white p-3.5 rounded-xl border border-slate-200 shadow-xs">${prompt}</p>
+                    </div>
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-100">Robot Response</span>
+                        <div class="text-sm text-slate-800 mt-1.5 bg-white p-4 rounded-xl border border-slate-200 shadow-xs leading-relaxed">
+                            <span class="text-blue-600 animate-pulse font-medium">Generating response...</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            box.insertAdjacentHTML('beforeend', newEntryHTML);
+            box.scrollTop = box.scrollHeight;
+            promptInput.value = '';
 
             try {
                 const res = await fetch('/api/ai', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt, grade, taskType, customTask, aiPersonality, scienceUnit })
+                    body: JSON.stringify({ username: loggedInUser, prompt, grade, taskType, customTask, aiPersonality, scienceUnit })
                 });
                 const data = await res.json();
+                
+                const exchangeDiv = document.getElementById(exchangeId);
+                const responseContainer = exchangeDiv.querySelector('div:last-child div');
+
                 if (res.ok) {
-                    box.innerHTML = marked.parse(data.result);
+                    responseContainer.innerHTML = marked.parse(data.result);
                 } else {
-                    box.innerHTML = `<span class="text-red-600 font-semibold">${data.error || 'Failed to generate'}</span>`;
+                    responseContainer.innerHTML = `<span class="text-red-600 font-semibold">${data.error || 'Failed to generate'}</span>`;
                 }
+                box.scrollTop = box.scrollHeight;
             } catch (err) {
-                box.innerText = 'Error connecting to AI service.';
+                const exchangeDiv = document.getElementById(exchangeId);
+                const responseContainer = exchangeDiv.querySelector('div:last-child div');
+                responseContainer.innerText = 'Error connecting to AI service.';
             }
         }
 

@@ -6,16 +6,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
-// Admin Server Lockdown State & Active Broadcast Message
 let isServerLockedDown = false;
 let currentBroadcastMessage = '';
 
-// Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(__dirname));
 
-// Database Setup
+// Persistent SQLite Database Setup
 const db = new sqlite3.Database('./database.db', (err) => {
     if (err) {
         console.error('Error connecting to SQLite database:', err.message);
@@ -24,7 +22,7 @@ const db = new sqlite3.Database('./database.db', (err) => {
     }
 });
 
-// Create tables if they don't exist
+// Create tables for users and AI interaction history
 db.serialize(() => {
     db.run(`
         CREATE TABLE IF NOT EXISTS users (
@@ -33,9 +31,20 @@ db.serialize(() => {
             password TEXT
         )
     `);
+
+    db.run(`
+        CREATE TABLE IF NOT EXISTS ai_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            grade TEXT,
+            taskType TEXT,
+            prompt TEXT,
+            response TEXT,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    `);
 });
 
-// Serve Public.html at root route
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'Public.html'));
 });
@@ -47,7 +56,8 @@ app.post(['/api/register', '/api/auth/register'], (req, res) => {
         return res.status(400).json({ error: 'Username and password are required.' });
     }
 
-    db.run('INSERT INTO users (username, password) VALUES (?, ?)', [username.trim(), password], function (err) {
+    const cleanUsername = username.trim();
+    db.run('INSERT INTO users (username, password) VALUES (?, ?)', [cleanUsername, password], function (err) {
         if (err) {
             return res.status(400).json({ error: 'Username already exists or database error.' });
         }
@@ -62,7 +72,8 @@ app.post(['/api/login', '/api/auth/login'], (req, res) => {
         return res.status(400).json({ error: 'Username and password are required.' });
     }
 
-    db.get('SELECT * FROM users WHERE username = ? AND password = ?', [username.trim(), password], (err, user) => {
+    const cleanUsername = username.trim();
+    db.get('SELECT * FROM users WHERE username = ? AND password = ?', [cleanUsername, password], (err, user) => {
         if (err) {
             return res.status(500).json({ error: 'Database error during login.' });
         }
@@ -73,7 +84,7 @@ app.post(['/api/login', '/api/auth/login'], (req, res) => {
     });
 });
 
-// Admin Authentication Check
+// Admin Auth & Controls
 app.post('/api/admin/auth', (req, res) => {
     const { password } = req.body;
     if (password === 'password' || password === ':password') {
@@ -83,21 +94,19 @@ app.post('/api/admin/auth', (req, res) => {
     }
 });
 
-// Admin Toggle Lockdown State
 app.post('/api/admin/lockdown', (req, res) => {
     const { lockdown } = req.body;
     isServerLockedDown = Boolean(lockdown);
     res.json({ success: true, isServerLockedDown });
 });
 
-// Admin Set Broadcast Announcement
 app.post('/api/admin/broadcast', (req, res) => {
     const { message } = req.body;
     currentBroadcastMessage = message || '';
     res.json({ success: true, message: currentBroadcastMessage });
 });
 
-// Client Poll for Broadcasts and System Status
+// Accurate Admin System Status & User Count
 app.get('/api/system/status', (req, res) => {
     db.get('SELECT COUNT(*) as count FROM users', (err, row) => {
         if (err) {
@@ -112,13 +121,24 @@ app.get('/api/system/status', (req, res) => {
     });
 });
 
-// Groq AI Integration Endpoint
+// Retrieve User AI History Log Endpoint
+app.get('/api/logs/:username', (req, res) => {
+    const username = req.params.username;
+    db.all('SELECT * FROM ai_logs WHERE username = ? ORDER BY id DESC', [username], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: 'Failed to retrieve logs' });
+        }
+        res.json({ logs: rows });
+    });
+});
+
+// Groq AI Integration Endpoint with History Logging
 app.post('/api/ai', async (req, res) => {
     if (isServerLockedDown) {
         return res.status(503).json({ error: 'Server is currently in Lockdown Mode by an administrator. No AI calls are permitted until reopened.' });
     }
 
-    const { prompt, grade, taskType, customTask, aiPersonality, scienceUnit } = req.body;
+    const { username, prompt, grade, taskType, customTask, aiPersonality, scienceUnit } = req.body;
 
     if (!GROQ_API_KEY) {
         return res.status(500).json({ error: 'GROQ_API_KEY is missing from environment variables on Render.' });
@@ -134,6 +154,18 @@ app.post('/api/ai', async (req, res) => {
 
     let refinedPrompt = `Target Grade Level: ${grade || 'Grade 8'}\nSelected Tool / Task Type: ${activeTask}\n${scienceUnitInfo}\n\nTeacher Request Details: ${prompt}`;
 
+    const requestPayload = {
+        model: 'openai/gpt-oss-20b',
+        messages: [
+            { role: 'system', content: systemRole },
+            { role: 'user', content: refinedPrompt }
+        ],
+        temperature: 0.7
+    };
+
+    console.log('--- SENDING TO GROQ API ---');
+    console.log(JSON.stringify(requestPayload, null, 2));
+
     try {
         const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
             method: 'POST',
@@ -141,20 +173,24 @@ app.post('/api/ai', async (req, res) => {
                 'Authorization': `Bearer ${GROQ_API_KEY.trim()}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                model: 'openai/gpt-oss-20b',
-                messages: [
-                    { role: 'system', content: systemRole },
-                    { role: 'user', content: refinedPrompt }
-                ],
-                temperature: 0.7
-            })
+            body: JSON.stringify(requestPayload)
         });
 
         const data = await response.json();
         
+        console.log('--- RECEIVED FROM GROQ API ---');
+        console.log(JSON.stringify(data, null, 2));
+        
         if (data.choices && data.choices[0]) {
-            res.json({ result: data.choices[0].message.content });
+            const aiResponseText = data.choices[0].message.content;
+
+            // Save interaction to SQLite database
+            if (username) {
+                db.run('INSERT INTO ai_logs (username, grade, taskType, prompt, response) VALUES (?, ?, ?, ?, ?)',
+                    [username, grade, activeTask, prompt, aiResponseText]);
+            }
+
+            res.json({ result: aiResponseText });
         } else {
             console.error('Groq API Error Response:', data);
             res.status(500).json({ error: data.error?.message || 'Failed to generate response from Groq AI' });
@@ -165,7 +201,6 @@ app.post('/api/ai', async (req, res) => {
     }
 });
 
-// Start Server
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
